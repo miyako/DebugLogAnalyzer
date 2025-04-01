@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="http://www.w3.org/1999/xhtml" version="1.0">
+  <file datatype="x-STR#" original="undefined" product-version="v20" source-language="en-US" target-language="ja">
+    <header>
+      <note/>
+    </header>
+    <body>
+      <group resname="form">
+        <trans-unit resname="Select Log Files…">
+          <source>Select Log Files…</source>
+          <target>Select Log Files…</target>
+        </trans-unit>
+        <trans-unit resname="Debug Log Files">
+          <source>Debug Log Files</source>
+          <target>Debug Log Files</target>
+        </trans-unit>
+        <trans-unit resname="Information">
+          <source>Information</source>
+          <target>Information</target>
+        </trans-unit>
+        <trans-unit resname="File Name">
+          <source>File Name</source>
+          <target>File Name</target>
+        </trans-unit>
+        <trans-unit resname="File Size">
+          <source>File Size</source>
+          <target>File Size</target>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>
