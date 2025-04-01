@@ -65,9 +65,9 @@
 					],
 					"listboxType": "collection",
 					"dataSource": "Form:C1466.logFile.col",
-					"currentItemSource": "Form:C1466.tableInfo.item",
-					"currentItemPositionSource": "Form:C1466.tableInfo.pos",
-					"selectedItemsSource": "Form:C1466.tableInfo.sel",
+					"currentItemSource": "Form:C1466.logFile.item",
+					"currentItemPositionSource": "Form:C1466.logFile.pos",
+					"selectedItemsSource": "Form:C1466.logFile.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "data",
 					"staticColumnCount": 1,
@@ -114,12 +114,33 @@
 							"width": 0
 						}
 					]
+				},
+				"Input": {
+					"type": "input",
+					"left": 403,
+					"top": 120,
+					"width": 142,
+					"height": 81,
+					"dataSourceTypeHint": "object",
+					"dataSource": "Form:C1466.logFile.item"
+				},
+				"Button": {
+					"type": "button",
+					"text": "Button",
+					"top": 275,
+					"left": 403,
+					"width": 65,
+					"height": 90,
+					"events": [
+						"onClick"
+					],
+					"method": "ObjectMethods/Button.4dm"
 				}
 			}
 		}
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 47,
+	"geometryStamp": 52,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",
