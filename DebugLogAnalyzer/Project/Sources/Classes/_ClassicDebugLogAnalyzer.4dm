@@ -113,6 +113,10 @@ Function _count($selection : Text; $ctx : Object) : Collection
 		End if 
 	End for each 
 	
+	If ($counts.length<=$length)
+		$counts:=$counts.orderBy("Execution_Time desc")
+	End if 
+	
 	var $e : cs:C1710.Log_LinesEntity
 	For each ($count; $counts)
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $count.hash).first()
@@ -174,6 +178,10 @@ Function _average($selection : Text; $ctx : Object) : Collection
 			End if 
 		End if 
 	End for each 
+	
+	If ($averages.length<=$length)
+		$averages:=$averages.orderBy("Execution_Time desc")
+	End if 
 	
 	var $e : cs:C1710.Log_LinesEntity
 	For each ($average; $averages)

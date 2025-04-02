@@ -421,9 +421,11 @@ Function _onFinish($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 		Form:C1466.commandCounts:={col: $analytics.counts.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.commandAverages:={col: $analytics.averages.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.commandTimes:={col: $analytics.times.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		
 		Form:C1466.methodCounts:={col: $analytics.counts.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.methodAverages:={col: $analytics.averages.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.methodTimes:={col: $analytics.times.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		
 		Form:C1466.functionCounts:={col: $analytics.counts.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.functionAverages:={col: $analytics.averages.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.functionTimes:={col: $analytics.times.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
