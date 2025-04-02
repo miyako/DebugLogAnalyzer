@@ -29,8 +29,6 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * support new classic "human readable" debug log file (see below)
 * support dark mode
 
-<img src="https://github.com/user-attachments/assets/b2697d25-f548-4082-9c7e-79dea44be984" width=800 height=auto />
-
 ## page 1
 
 analysis starts as soon as a set of debug log files or a folder is selected or dropped on the listbox
