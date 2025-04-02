@@ -25,7 +25,7 @@
 					"text": "Tab control",
 					"top": 10,
 					"left": 20,
-					"width": 1143,
+					"width": 923,
 					"height": 560,
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -69,7 +69,7 @@
 					"currentItemPositionSource": "Form:C1466.logFile.pos",
 					"selectedItemsSource": "Form:C1466.logFile.sel",
 					"horizontalLineStroke": "transparent",
-					"class": "data",
+					"class": "files",
 					"staticColumnCount": 1,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
@@ -78,7 +78,6 @@
 					"method": "ObjectMethods/logFile.4dm",
 					"selectionMode": "multiple",
 					"lockedColumnCount": 0,
-					"alternateFill": "#E7EEE7",
 					"columns": [
 						{
 							"header": {
@@ -114,12 +113,150 @@
 							"width": 0
 						}
 					]
+				},
+				"logLines": {
+					"type": "listbox",
+					"left": 300,
+					"top": 60,
+					"width": 630,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.logLines.col",
+					"currentItemSource": "Form:C1466.logLines.item",
+					"currentItemPositionSource": "Form:C1466.logLines.pos",
+					"selectedItemsSource": "Form:C1466.logLines.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "records",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:ID",
+								"name": "Header7"
+							},
+							"name": "Column7",
+							"footer": {
+								"name": "Footer7"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 80,
+							"dataSource": "This:C1470.MS_Stamp",
+							"dataSourceTypeHint": "text",
+							"textAlign": "right"
+						},
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header3"
+							},
+							"name": "Column3",
+							"footer": {
+								"name": "Footer3"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header5",
+								"text": ":xliff:Cmd Event"
+							},
+							"name": "Column5",
+							"resizable": false,
+							"enterable": false,
+							"dataSource": "This:C1470.Cmd_Event",
+							"footer": {
+								"name": "Footer5"
+							},
+							"truncateMode": "none",
+							"textAlign": "right"
+						},
+						{
+							"header": {
+								"name": "Header6",
+								"text": ":xliff:Cmd Type"
+							},
+							"name": "Column6",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Cmd_Type",
+							"footer": {
+								"name": "Footer6"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 130,
+							"textAlign": "right"
+						},
+						{
+							"header": {
+								"name": "Header4",
+								"text": ":xliff:Execution Time"
+							},
+							"name": "Column4",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer4"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"Input": {
+					"type": "input",
+					"left": 875,
+					"top": 5,
+					"width": 68,
+					"height": 17,
+					"dataSource": "Form:C1466.duration",
+					"enterable": false,
+					"fill": "transparent",
+					"borderStyle": "none",
+					"textAlign": "right"
+				},
+				"useMultipleCores": {
+					"type": "checkbox",
+					"text": ":xliff:Parallel Processing",
+					"top": 32,
+					"left": 215,
+					"width": 146,
+					"height": 18,
+					"events": [
+						"onLoad",
+						"onClick"
+					],
+					"dataSourceTypeHint": "boolean",
+					"dataSource": "Form:C1466.useMultipleCores",
+					"focusable": false
 				}
 			}
-		}
+		},
+		null
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 54,
+	"geometryStamp": 145,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",

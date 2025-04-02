@@ -1,0 +1,39 @@
+header  {
+	font-weight: bold;
+}
+
+@media (prefers-color-scheme: light){
+
+	listbox.files {
+		alternateFill: #E7EEE7;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: dark){
+
+	listbox.files {
+		alternateFill: #272828;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: light){
+
+	listbox.records {
+		alternateFill:  #E8EEEE;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: dark){
+
+	listbox.records {
+		alternateFill: #272828;
+		fill: automatic;
+	}
+
+}

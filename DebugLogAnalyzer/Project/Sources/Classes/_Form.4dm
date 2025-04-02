@@ -1,7 +1,6 @@
 property countCores : Integer
 property isInterpretedMode : Boolean
 property isRunning : Boolean
-property dispatchInterval : Integer
 property updateIntervalUnit : Integer
 property useMultipleCores : Boolean
 
@@ -16,7 +15,6 @@ Class constructor
 	
 	This:C1470.isInterpretedMode:=Not:C34(Is compiled mode:C492)
 	This:C1470.isRunning:=False:C215
-	This:C1470.dispatchInterval:=This:C1470.isInterpretedMode ? 12 : 6  //every 0.1 seconds
 	This:C1470.updateIntervalUnit:=This:C1470.isInterpretedMode ? 200 : 100  //every 0.1 seconds
 	This:C1470.useMultipleCores:=False:C215
 	

@@ -10,20 +10,65 @@ property Log_Version : Integer
 property charset : Text
 property option : Object
 property Id : Integer
+property properties : Collection
+property path : Text
 
 Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogParser)
 	
 	This:C1470.file:=$file
+	
 	Case of 
-		: ($parser=Null:C1517)
+		: ($parser=Null:C1517) && (OB Instance of:C1731($file; 4D:C1709.File))  //for first file
 			This:C1470.fileHandle:=$file.open("read")
 			This:C1470.line1:=This:C1470.fileHandle.readLine()
 		: (OB Instance of:C1731($parser; cs:C1710._ClassicDebugLogParser)) && ($parser.option#Null:C1517)
 			This:C1470.fileHandle:=$file.open($parser.option)
-			var $attr : Text
-			For each ($attr; ["Id"; "option"; "charset"; "Log_Version"; "Log_MS"; "Log_Time"; "Log_Date"; "breakModeRead"; "isValid"; "line1"])
-				This:C1470[$attr]:=$parser[$attr]
-			End for each 
+			This:C1470.toObject(This:C1470; $parser)
+	End case 
+	
+Function toObject($this : Object; $that : Object) : cs:C1710._ClassicDebugLogParser
+	
+	$properties:=["option"; "Id"; "option"; "charset"; "Log_Version"; "Log_MS"; "Log_Time"; "Log_Date"; "breakModeRead"; "isValid"; "line1"]
+	
+	var $attr : Text
+	For each ($attr; $properties)
+		$this[$attr]:=$that[$attr]
+	End for each 
+	
+	If ($this.file=Null:C1517) && ($that.file#Null:C1517)
+		$this.file:=$that.file
+	End if 
+	
+	return This:C1470
+	
+Function reopen() : cs:C1710._ClassicDebugLogParser
+	
+	If (This:C1470.fileHandle=Null:C1517)
+		This:C1470.fileHandle:=This:C1470.file.open(This:C1470.option)
+		This:C1470.fileHandle.readLine()
+	End if 
+	
+Function _tokenToCommandType($token : Text) : Text
+	
+	Case of 
+		: ($token="cmd")
+			return "native command"
+		: ($token="plugin")
+			return "plugin call"
+		: ($token="end_meth")
+			return "project method"
+		: ($token="end_form")
+			return "form method"
+		: ($token="end_obj")
+			return "object method"
+		: ($token="meth")
+			return "project method"
+		: ($token="mbr")
+			return "member function"
+		: ($token="form")
+			return "form method"
+		Else 
+			TRACE:C157
 	End case 
 	
 Function start() : Object
@@ -106,18 +151,18 @@ Function start() : Object
 	
 	return This:C1470.option
 	
-Function continue()
+Function continue($ctx : Object)
 	
 	If (This:C1470.isValid)
 		Case of 
 			: (This:C1470.Log_Version=2)
-				This:C1470._v2()
+				This:C1470._v2($ctx)
 			: (This:C1470.Log_Version=1)
-				This:C1470._v1()
+				This:C1470._v1($ctx)
 		End case 
 	End if 
 	
-Function _v($flag : Integer)
+Function _v($flag : Integer; $ctx : Object)
 	
 	ARRAY LONGINT:C221($pos; 0)
 	ARRAY LONGINT:C221($len; 0)
@@ -132,6 +177,15 @@ Function _v($flag : Integer)
 	
 	var $o : Object
 	var $ms : Text
+	
+	var $interval : Real
+	var $isGUI : Boolean
+	
+	If ($ctx#Null:C1517)
+		$isGUI:=True:C214
+		$interval:=$ctx.updateInterval
+		$time:=Milliseconds:C459
+	End if 
 	
 	Repeat 
 		
@@ -182,6 +236,7 @@ Function _v($flag : Integer)
 						: ($token="end_form") || ($token="end_obj")
 							$Command:=$info
 							$Execution_Time:=0
+							$Cmd_Event:=""
 /*
 no information in end tag;
 use p, pid only
@@ -192,9 +247,12 @@ use p, pid only
 							End if 
 							If ($o#Null:C1517)
 								$Execution_Time:=$MS_Stamp-$o.MS_Stamp
+								$Command:=$o.Command
+								$Cmd_Event:=$o.Cmd_Event
 								$MS_Stamp_form.remove($MS_Stamp_form.indexOf($o))
 							Else 
 								//no start record in stack
+								continue
 							End if 
 						: ($token="end_meth")
 							$Command:=$info
@@ -228,12 +286,12 @@ use p, pid only
 								$Execution_Time:=0
 							End if 
 						: ($token="form") || ($token="obj")
-							If (Match regex:C1019("(.+); event: (\\.+)"; $info; 1; $pos; $len))
+							If (Match regex:C1019("([^;]+); event: (.+)"; $info; 1; $pos; $len))
 								$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
 								$Command:=Substring:C12($info; $pos{1}; $len{1})
 								$MS_Stamp_form.push({\
 									MS_Stamp: $MS_Stamp; \
-									Command: $info; \
+									Command: $Command; \
 									Cmd_Event: $Cmd_Event; \
 									Stack_Level: $Stack_Level; \
 									PID: $PID; \
@@ -271,6 +329,13 @@ is not synchronous at the ms/process level
 							End if 
 					End case 
 					This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+					$milliseconds:=Milliseconds:C459
+					If (($milliseconds-$time)>$interval)
+						$time:=$milliseconds
+						If ($isGUI)
+							CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+						End if 
+					End if 
 					continue
 			End case 
 		End if 
@@ -326,12 +391,26 @@ is not synchronous at the ms/process level
 												$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
 												$Command:=Substring:C12($info; $pos{1}; $len{1})
 												This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+												$milliseconds:=Milliseconds:C459
+												If (($milliseconds-$time)>$interval)
+													$time:=$milliseconds
+													If ($isGUI)
+														CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+													End if 
+												End if 
+												continue
 											End if 
-											continue
 										: ($token="cmd") || ($token="meth") || ($token="mbr")
 											$Cmd_Event:=""
 									End case 
 									This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; "")
+									$milliseconds:=Milliseconds:C459
+									If (($milliseconds-$time)>$interval)
+										$time:=$milliseconds
+										If ($isGUI)
+											CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+										End if 
+									End if 
 									continue
 								End if 
 							: ($token="plugInName")  //end_externCall has entry point number
@@ -342,6 +421,13 @@ is not synchronous at the ms/process level
 										$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
 										$Command:=Substring:C12($info; $pos{1}; $len{1})
 										This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+										$milliseconds:=Milliseconds:C459
+										If (($milliseconds-$time)>$interval)
+											$time:=$milliseconds
+											If ($isGUI)
+												CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+											End if 
+										End if 
 										continue
 									End if 
 								Else 
@@ -354,13 +440,13 @@ is not synchronous at the ms/process level
 		End if 
 	Until (False:C215)
 	
-Function _v1()
+Function _v1($ctx : Object)
 	
-	This:C1470._v(1)
+	This:C1470._v(1; $ctx)
 	
-Function _v2()
+Function _v2($ctx : Object)
 	
-	This:C1470._v(2)
+	This:C1470._v(2; $ctx)
 	
 Function _add($DL_ID : Integer; $MS_Stamp : Integer; $PID : Integer; $UPID : Integer; $Stack_Level : Integer; $Execution_Time : Integer; $Command : Text; $Cmd_Type : Text; $Cmd_Event : Text)
 	
@@ -373,7 +459,7 @@ Function _add($DL_ID : Integer; $MS_Stamp : Integer; $PID : Integer; $UPID : Int
 	$Log_Lines.Stack_Level:=$Stack_Level
 	$Log_Lines.Command:=$Command
 	$Log_Lines.Execution_Time:=$Execution_Time
-	$Log_Lines.Cmd_Type:=$Cmd_Type
+	$Log_Lines.Cmd_Type:=This:C1470._tokenToCommandType($Cmd_Type)
 	$Log_Lines.Cmd_Event:=$Cmd_Event
 	$Log_Lines.Hash:=Generate digest:C1147([$Cmd_Type; $Command; $Cmd_Event].join(":"); SHA1 digest:K66:2)
 	$Log_Lines.save()
