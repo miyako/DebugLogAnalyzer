@@ -6,6 +6,19 @@
 # DebugLogAnalyzer
 based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009)
 
+## dependencies.json
+
+ ```json
+{
+	"dependencies": {
+		"DataAnalyzer": {
+			"github": "miyako/DataAnalyzer",
+			"version": "latest"
+		}
+	}
+}
+```
+
 ## Modifications
 
 * resolve data file alias or shortcut
