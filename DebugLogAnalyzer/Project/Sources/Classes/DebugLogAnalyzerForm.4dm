@@ -287,13 +287,11 @@ Function _open($ctx : Object)
 			End for each 
 		Else 
 			$first.continue($ctx)
-			$ctx.files:=$ctx.files.filter($ctx.onFilter; $first.file.path)
 			$ctx.onReadFile($debugLogInfo; $file; $ctx)
 			CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
 			For each ($file; $ctx.files)
 				$parser:=cs:C1710._ClassicDebugLogParser.new($file; $first)
 				$parser.continue($ctx)
-				$ctx.files:=$ctx.files.filter($ctx.onFilter; $parser.file.path)
 				$ctx.onReadFile($debugLogInfo; $file; $ctx)
 				CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
 			End for each 
@@ -301,6 +299,10 @@ Function _open($ctx : Object)
 	End if 
 	
 Function _onReadFile($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
+	
+	Use ($ctx.files)
+		$ctx.files:=$ctx.files.filter($ctx.onFilter; $file.path)
+	End use 
 	
 	If ($ctx.files.length=0)
 		var $analyzer : cs:C1710._ClassicDebugLogAnalyzer
@@ -326,7 +328,6 @@ Function _processFile($debugLogInfo : Object; $ctx : Object)
 		$parser:=cs:C1710._ClassicDebugLogParser.new()
 		$parser.toObject($parser; $that).reopen()
 		$parser.continue($ctx)
-		$ctx.files:=$ctx.files.filter($ctx.onFilter; $parser.file.path)
 		$ctx.onReadFile($debugLogInfo; $parser.file; $ctx)
 		CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $parser.file; $ctx)
 	End if 
