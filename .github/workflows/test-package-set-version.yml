@@ -1,0 +1,34 @@
+name: Test - Set Package Version
+
+on: 
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        description: semantic versioning
+        options: 
+        - patch
+        - minor 
+        - major
+        
+jobs:
+
+  test:
+    permissions: write-all
+    runs-on: [ubuntu-latest]
+    steps:
+    
+      - name: checkout 
+        uses: actions/checkout@v4
+    
+      - name: set version
+        id: set
+        uses: miyako/4D/.github/actions/package-set-version@v1
+        with:
+          mode: ${{ inputs.mode }}
+
+      - name: print result
+        run: |
+          echo "version: ${version}"
+        env: 
+          version: ${{ steps.set.outputs.version }}

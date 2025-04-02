@@ -1,0 +1,17 @@
+{
+  "name": "DebugLogAnalyzer",
+  "description": "DebugLogAnalyzer",
+  "author": [
+    "Keisuke Miyako <keisuke.miyako@4D.com>"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/miyako/DebugLogAnalyzer",
+  "version": "1.0.0",
+  "tool": {
+    "platform": "macos",
+    "branch": "20%20Rx",
+    "version": "20%20R7",
+    "build": "latest",
+    "arch": "arm"
+  }
+}

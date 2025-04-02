@@ -1,0 +1,31 @@
+name: Test - Get Tool Version
+
+on: 
+  workflow_dispatch:
+
+jobs:
+
+  test:
+    runs-on: [ubuntu-latest]
+    steps:
+
+      - name: checkout 
+        uses: actions/checkout@v4
+    
+      - name: get values
+        id: get
+        uses: miyako/4D/.github/actions/tool4d-get-version@v1
+
+      - name: print result
+        run: |
+          echo "platform: ${platform}"
+          echo "branch: ${branch}"
+          echo "version: ${version}"
+          echo "build: ${build}"
+          echo "arch: ${arch}"
+        env: 
+          platform: ${{ steps.get.outputs.platform }}
+          branch: ${{ steps.get.outputs.branch }}
+          version: ${{ steps.get.outputs.version }}
+          build: ${{ steps.get.outputs.build }}
+          arch: ${{ steps.get.outputs.arch }}

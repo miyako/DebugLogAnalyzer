@@ -1,0 +1,110 @@
+name: Publish
+  
+on:
+  push:
+    branches:
+    - main
+    paths:
+      - '*/Project/Sources/**/*.4dm'
+      - '*/Project/Sources/*/*.4DForm'
+      - '*/Project/Sources/*.4DCatalog'
+      - '*/Project/Resources/**'
+  workflow_dispatch:
+    inputs:
+        mode:
+          type: choice
+          description: semantic versioning
+          options: 
+          - patch
+          - minor 
+          - major
+          required: true
+
+env: 
+  project_path: DebugLogAnalyzer/Project/DebugLogAnalyzer.4DProject
+  
+jobs:
+
+  publish:
+    permissions: write-all
+    runs-on: [macos-latest]
+    steps:
+
+      - name: configure
+        id: configure
+        run: |
+          if [ "${mode}" = "" ]; then
+          echo "mode=patch" >> $GITHUB_OUTPUT
+          else
+          echo "mode=${mode}" >> $GITHUB_OUTPUT
+          fi
+          echo "project_path=${GITHUB_WORKSPACE}/${project_path}" >> $GITHUB_OUTPUT 
+        shell: bash
+        env:
+          mode: ${{ inputs.mode }} 
+
+      - name: checkout 
+        uses: actions/checkout@v4
+
+      - name: set version
+        id: version
+        uses: miyako/4D/.github/actions/package-set-version@v1
+        with:
+          mode: ${{ steps.configure.outputs.mode }}
+
+      - name: get tool version
+        id: tool
+        uses: miyako/4D/.github/actions/tool4d-get-version@v1
+        
+      - name: get tool4d
+        id: get
+        uses: miyako/4D/.github/actions/tool4d-download@v1
+        with:
+          platform: ${{ steps.tool.outputs.platform }}
+          branch: ${{ steps.tool.outputs.branch }}
+          version: ${{ steps.tool.outputs.version }}
+          build: ${{ steps.tool.outputs.build }}
+          arch: ${{ steps.tool.outputs.arch }}
+
+      - name: build
+        id: build
+        uses: miyako/4D/.github/actions/build-component@v1
+        with: 
+          project_path: ${{ steps.configure.outputs.project_path }}
+
+      - name: setup keychain 
+        id: keychain
+        uses: miyako/4D/.github/actions/deployment-setup-keychain@v1
+        with:
+          APPLE_DEVELOPER_ID_CERTIFICATE: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE }}
+          APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: codesign
+        id: codesign
+        uses: miyako/4D/.github/actions/deployment-codesign-product@v1
+        with: 
+          sign: ${{ secrets.CODESIGN_APPLE_ID }} 
+          apple_id: ${{ secrets.NOTARYTOOL_APPLE_ID }}         
+          team_id: ${{ secrets.NOTARYTOOL_TEAM_ID }}   
+          password: ${{ secrets.NOTARYTOOL_PASSWORD }}
+          product_path: ${{ steps.build.outputs.product_path }}
+          keychain: ${{ steps.keychain.outputs.KEYCHAIN_PATH }}
+          
+      - name: zip
+        id: zip
+        uses: miyako/4D/.github/actions/deployment-create-zip@v1
+        with: 
+          dmg_path: ${{ steps.codesign.outputs.dmg_path }}
+          zip_path: ${{ steps.codesign.outputs.zip_path }}
+
+      - name: upload assets
+        id: upload
+        uses: miyako/4D/.github/actions/deployment-release-assets@v1
+        with: 
+          dmg_path: ${{ steps.zip.outputs.dmg_path }}
+          zip_path: ${{ steps.zip.outputs.zip_path }}    
+          tag_name: ${{ steps.version.outputs.version }}   
+          release_name: ${{ steps.version.outputs.version }}  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
