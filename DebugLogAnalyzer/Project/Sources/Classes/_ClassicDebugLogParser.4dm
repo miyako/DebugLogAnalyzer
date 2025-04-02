@@ -330,7 +330,7 @@ is not synchronous at the ms/process level
 					End case 
 					This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
 					$milliseconds:=Milliseconds:C459
-					If (($milliseconds-$time)>$interval)
+					If (Abs:C99($milliseconds-$time)>$interval)
 						$time:=$milliseconds
 						If ($isGUI)
 							CALL FORM:C1391($ctx.window; $ctx.onRefresh)
@@ -392,7 +392,7 @@ is not synchronous at the ms/process level
 												$Command:=Substring:C12($info; $pos{1}; $len{1})
 												This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
 												$milliseconds:=Milliseconds:C459
-												If (($milliseconds-$time)>$interval)
+												If (Abs:C99($milliseconds-$time)>$interval)
 													$time:=$milliseconds
 													If ($isGUI)
 														CALL FORM:C1391($ctx.window; $ctx.onRefresh)
@@ -405,7 +405,7 @@ is not synchronous at the ms/process level
 									End case 
 									This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; "")
 									$milliseconds:=Milliseconds:C459
-									If (($milliseconds-$time)>$interval)
+									If (Abs:C99($milliseconds-$time)>$interval)
 										$time:=$milliseconds
 										If ($isGUI)
 											CALL FORM:C1391($ctx.window; $ctx.onRefresh)
@@ -422,7 +422,7 @@ is not synchronous at the ms/process level
 										$Command:=Substring:C12($info; $pos{1}; $len{1})
 										This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
 										$milliseconds:=Milliseconds:C459
-										If (($milliseconds-$time)>$interval)
+										If (Abs:C99($milliseconds-$time)>$interval)
 											$time:=$milliseconds
 											If ($isGUI)
 												CALL FORM:C1391($ctx.window; $ctx.onRefresh)

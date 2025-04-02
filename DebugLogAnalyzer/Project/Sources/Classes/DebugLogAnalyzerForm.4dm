@@ -1,20 +1,20 @@
 property logFile : Object
 property updateInterval : Real
 property startTime : Integer
+property refreshTime : Integer
 property duration : Text
 property logLines : Object
 property length : Integer
 property commandCounts : Object
 property commandAverages : Object
 property commandTimes : Object
-
 property methodCounts : Object
 property methodAverages : Object
 property methodTimes : Object
-
 property functionCounts : Object
 property functionAverages : Object
 property functionTimes : Object
+property refreshInterval : Integer
 
 Class extends _Form
 
@@ -25,6 +25,7 @@ Class constructor
 	This:C1470.logFile:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 	
 	This:C1470.length:=10
+	This:C1470.refreshInterval:=1000
 	
 	//MARK:-Form Object States
 	
@@ -145,7 +146,7 @@ Function onUnload()
 Function start() : cs:C1710.DebugLogAnalyzerForm
 	
 	This:C1470.startTime:=Milliseconds:C459
-	
+	This:C1470.refreshTime:=This:C1470.startTime
 	This:C1470.isRunning:=True:C214
 	This:C1470.toggleSelectDataFile()
 	
@@ -221,7 +222,6 @@ Function open($paths : Collection)
 	$ctx.onStart:=This:C1470._onStart
 	$ctx.onFinish:=This:C1470._onFinish
 	$ctx.onYield:=This:C1470._onYield
-	$ctx.onFilter:=This:C1470._onFilter
 	$ctx.countCores:=$countCores
 	$ctx.useMultipleCores:=This:C1470.useMultipleCores
 	$ctx.updateInterval:=This:C1470.updateInterval
@@ -290,7 +290,7 @@ Function _open($ctx : Object)
 			$first.continue($ctx)
 			$ctx.onReadFile($debugLogInfo; $file; $ctx)
 			CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
-			For each ($file; $ctx.files)
+			For each ($file; $ctx.files.slice(1))
 				$parser:=cs:C1710._ClassicDebugLogParser.new($file; $first)
 				$parser.continue($ctx)
 				$ctx.onReadFile($debugLogInfo; $file; $ctx)
@@ -301,11 +301,9 @@ Function _open($ctx : Object)
 	
 Function _onReadFile($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 	
-	Use ($ctx.paths)
-		$ctx.paths:=$ctx.paths.filter($ctx.onFilter; $file.path)
-	End use 
+	$ctx.paths.remove($ctx.paths.indexOf($file.path))
 	
-	If ($ctx.files.length=0)
+	If ($ctx.paths.length=0)
 		var $analyzer : cs:C1710._ClassicDebugLogAnalyzer
 		$analyzer:=cs:C1710._ClassicDebugLogAnalyzer.new($ctx.length)
 		var $logs : cs:C1710.Log_LinesSelection
@@ -334,10 +332,6 @@ Function _processFile($debugLogInfo : Object; $ctx : Object)
 	End if 
 	
 	CALL WORKER:C1389(Current process name:C1392; $ctx.workerFunction; $debugLogInfo; $ctx)
-	
-Function _onFilter($event : Object; $path : Text)
-	
-	$event.result:=($event.value.path#$path)
 	
 Function _sortBySuffix($event : Object)
 	
@@ -376,9 +370,17 @@ Function _onRefresh()
 	
 	$this.updateDuration()
 	
-	$col:=ds:C1482.Log_Lines.query("DL_ID == :1 and Execution_Time != :2 order by Execution_Time desc"; $this.debugLogInfo.Id; 0)
+	$ms:=Milliseconds:C459
 	
-	$this.logLines:={col: $col; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	If (Abs:C99($ms-$this.refreshTime)>$this.refreshInterval)
+		
+		$col:=ds:C1482.Log_Lines.query("DL_ID == :1 and Execution_Time != :2 order by Execution_Time desc"; $this.debugLogInfo.Id; 0)
+		
+		$this.logLines:={col: $col; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		
+		$this.refreshTime:=$ms
+		
+	End if 
 	
 Function _onStart($debugLogInfo : Object; $ctx : Object)
 	

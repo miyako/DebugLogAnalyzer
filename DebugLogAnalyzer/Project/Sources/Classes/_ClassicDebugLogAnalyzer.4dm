@@ -105,7 +105,7 @@ Function _count($selection : Text; $ctx : Object) : Collection
 			End if 
 		End if 
 		$milliseconds:=Milliseconds:C459
-		If (($milliseconds-This:C1470.ms)>$interval)
+		If (Abs:C99($milliseconds-This:C1470.ms)>$interval)
 			This:C1470.ms:=$milliseconds
 			If ($isGUI)
 				CALL FORM:C1391($ctx.window; $ctx.onYield)
@@ -167,7 +167,7 @@ Function _average($selection : Text; $ctx : Object) : Collection
 			End if 
 		End if 
 		$milliseconds:=Milliseconds:C459
-		If (($milliseconds-This:C1470.ms)>$interval)
+		If (Abs:C99($milliseconds-This:C1470.ms)>$interval)
 			This:C1470.ms:=$milliseconds
 			If ($isGUI)
 				CALL FORM:C1391($ctx.window; $ctx.onYield)

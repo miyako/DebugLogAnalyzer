@@ -58,6 +58,18 @@
           <source>Average</source>
           <target>Average</target>
         </trans-unit>
+        <trans-unit resname="Methods">
+          <source>Methods</source>
+          <target>Methods</target>
+        </trans-unit>
+        <trans-unit resname="Functions">
+          <source>Functions</source>
+          <target>Functions</target>
+        </trans-unit>
+        <trans-unit resname="Commands">
+          <source>Commands</source>
+          <target>Commands</target>
+        </trans-unit>
       </group>
     </body>
   </file>
