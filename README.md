@@ -39,9 +39,6 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 - [ ] Top 20 Project methods by average execution time
 - [ ] Top 20 Form methods by average execution time
 - [ ] Top 20 Object methods by average execution time
-- [ ] Top 20 Project methods by longest execution time
-- [ ] Top 20 Form methods by longest execution time
-- [ ] Top 20 Object methods by longest execution time
 
 ## page 1
 
