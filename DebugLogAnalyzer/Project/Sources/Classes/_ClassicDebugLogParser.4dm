@@ -113,8 +113,7 @@ Function continue()
 			: (This:C1470.version=2)
 				This:C1470._v2()
 			: (This:C1470.version=1)
-				//file format is too old, not supported
-				This:C1470._v1()
+				This:C1470._v1()  //file format is too old, not fully supported
 		End case 
 	End if 
 	
