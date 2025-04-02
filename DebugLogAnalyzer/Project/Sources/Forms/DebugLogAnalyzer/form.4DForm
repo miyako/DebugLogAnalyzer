@@ -25,13 +25,15 @@
 					"text": "Tab control",
 					"top": 10,
 					"left": 20,
-					"width": 923,
+					"width": 1030,
 					"height": 560,
 					"sizingX": "grow",
 					"sizingY": "grow",
 					"labels": [
 						":xliff:Debug Log Files",
-						":xliff:Information"
+						":xliff:Commands",
+						":xliff:Methods",
+						":xliff:Functions"
 					],
 					"action": "gotoPage",
 					"bottom": 570
@@ -45,7 +47,7 @@
 					"text": ":xliff:Select Log Files…",
 					"top": 30,
 					"left": 30,
-					"width": 176,
+					"width": 136,
 					"height": 22,
 					"events": [
 						"onClick"
@@ -118,7 +120,7 @@
 					"type": "listbox",
 					"left": 300,
 					"top": 60,
-					"width": 630,
+					"width": 740,
 					"height": 500,
 					"events": [
 						"onDrop",
@@ -226,7 +228,7 @@
 				},
 				"Input": {
 					"type": "input",
-					"left": 875,
+					"left": 982,
 					"top": 5,
 					"width": 68,
 					"height": 17,
@@ -240,7 +242,7 @@
 					"type": "checkbox",
 					"text": ":xliff:Parallel Processing",
 					"top": 32,
-					"left": 215,
+					"left": 175,
 					"width": 146,
 					"height": 18,
 					"events": [
@@ -253,10 +255,570 @@
 				}
 			}
 		},
-		null
+		{
+			"objects": {
+				"commandCounts": {
+					"type": "listbox",
+					"left": 370,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.commandCounts.col",
+					"currentItemSource": "Form:C1466.commandCounts.item",
+					"currentItemPositionSource": "Form:C1466.commandCounts.pos",
+					"selectedItemsSource": "Form:C1466.commandCounts.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "commands",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header9"
+							},
+							"name": "Column9",
+							"footer": {
+								"name": "Footer9"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header12",
+								"text": ":xliff:Counts"
+							},
+							"name": "Column12",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer12"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"commandAverages": {
+					"type": "listbox",
+					"left": 30,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.commandAverages.col",
+					"currentItemSource": "Form:C1466.commandAverages.item",
+					"currentItemPositionSource": "Form:C1466.commandAverages.pos",
+					"selectedItemsSource": "Form:C1466.commandAverages.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "commands",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header8"
+							},
+							"name": "Column8",
+							"footer": {
+								"name": "Footer8"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header15",
+								"text": ":xliff:Average"
+							},
+							"name": "Column15",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer15"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"commandTimes": {
+					"type": "listbox",
+					"left": 710,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.commandTimes.col",
+					"currentItemSource": "Form:C1466.commandTimes.item",
+					"currentItemPositionSource": "Form:C1466.commandTimes.pos",
+					"selectedItemsSource": "Form:C1466.commandTimes.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "commands",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header10"
+							},
+							"name": "Column10",
+							"footer": {
+								"name": "Footer10"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header11",
+								"text": ":xliff:Execution Time"
+							},
+							"name": "Column11",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer11"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				}
+			}
+		},
+		{
+			"objects": {
+				"methodCounts": {
+					"type": "listbox",
+					"left": 370,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.methodCounts.col",
+					"currentItemSource": "Form:C1466.methodCounts.item",
+					"currentItemPositionSource": "Form:C1466.methodCounts.pos",
+					"selectedItemsSource": "Form:C1466.methodCounts.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "methods",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header13"
+							},
+							"name": "Column13",
+							"footer": {
+								"name": "Footer13"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header14",
+								"text": ":xliff:Counts"
+							},
+							"name": "Column14",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer14"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"methodAverages": {
+					"type": "listbox",
+					"left": 30,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.methodAverages.col",
+					"currentItemSource": "Form:C1466.methodAverages.item",
+					"currentItemPositionSource": "Form:C1466.methodAverages.pos",
+					"selectedItemsSource": "Form:C1466.methodAverages.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "methods",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header16"
+							},
+							"name": "Column16",
+							"footer": {
+								"name": "Footer16"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header17",
+								"text": ":xliff:Average"
+							},
+							"name": "Column17",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer17"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"methodTimes": {
+					"type": "listbox",
+					"left": 710,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.methodTimes.col",
+					"currentItemSource": "Form:C1466.methodTimes.item",
+					"currentItemPositionSource": "Form:C1466.methodTimes.pos",
+					"selectedItemsSource": "Form:C1466.methodTimes.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "methods",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header18"
+							},
+							"name": "Column18",
+							"footer": {
+								"name": "Footer18"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header19",
+								"text": ":xliff:Execution Time"
+							},
+							"name": "Column19",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer19"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				}
+			}
+		},
+		{
+			"objects": {
+				"functionCounts": {
+					"type": "listbox",
+					"left": 370,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.functionCounts.col",
+					"currentItemSource": "Form:C1466.functionCounts.item",
+					"currentItemPositionSource": "Form:C1466.functionCounts.pos",
+					"selectedItemsSource": "Form:C1466.functionCounts.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "functions",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header20"
+							},
+							"name": "Column20",
+							"footer": {
+								"name": "Footer20"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header21",
+								"text": ":xliff:Counts"
+							},
+							"name": "Column21",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer21"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"functionAverages": {
+					"type": "listbox",
+					"left": 30,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.functionAverages.col",
+					"currentItemSource": "Form:C1466.functionAverages.item",
+					"currentItemPositionSource": "Form:C1466.functionAverages.pos",
+					"selectedItemsSource": "Form:C1466.functionAverages.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "functions",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header22"
+							},
+							"name": "Column22",
+							"footer": {
+								"name": "Footer22"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header23",
+								"text": ":xliff:Average"
+							},
+							"name": "Column23",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer23"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				},
+				"functionTimes": {
+					"type": "listbox",
+					"left": 710,
+					"top": 60,
+					"width": 330,
+					"height": 500,
+					"events": [
+						"onDrop",
+						"onDragOver"
+					],
+					"listboxType": "collection",
+					"dataSource": "Form:C1466.functionTimes.col",
+					"currentItemSource": "Form:C1466.functionTimes.item",
+					"currentItemPositionSource": "Form:C1466.functionTimes.pos",
+					"selectedItemsSource": "Form:C1466.functionTimes.sel",
+					"horizontalLineStroke": "transparent",
+					"class": "functions",
+					"staticColumnCount": 1,
+					"resizingMode": "legacy",
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"dropping": "custom",
+					"selectionMode": "multiple",
+					"lockedColumnCount": 0,
+					"columns": [
+						{
+							"header": {
+								"text": ":xliff:Command",
+								"name": "Header24"
+							},
+							"name": "Column24",
+							"footer": {
+								"name": "Footer24"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 240,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "text",
+							"textAlign": "left"
+						},
+						{
+							"header": {
+								"name": "Header25",
+								"text": ":xliff:Execution Time"
+							},
+							"name": "Column25",
+							"enterable": false,
+							"resizable": false,
+							"truncateMode": "none",
+							"dataSource": "This:C1470.Execution_Time",
+							"footer": {
+								"name": "Footer25"
+							},
+							"dataSourceTypeHint": "number",
+							"width": 30,
+							"textAlign": "right"
+						}
+					]
+				}
+			}
+		}
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 145,
+	"geometryStamp": 459,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",

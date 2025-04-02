@@ -18,7 +18,9 @@
 		<field name="UPID" uuid="438446DF3EB04219B50D5F5B1932FA4D" type="4" id="5"/>
 		<field name="Stack_Level" uuid="4F71F817C2B447719D72B22F5EF5A4DA" type="4" id="6"/>
 		<field name="Command" uuid="95D8CE69BD314F77AB51C1C97A582496" type="10" id="7"/>
-		<field name="Execution_Time" uuid="FEF0C94B00D54F4B8BF058A8D2816CB0" type="4" id="8"/>
+		<field name="Execution_Time" uuid="FEF0C94B00D54F4B8BF058A8D2816CB0" type="4" id="8">
+			<field_extra visible="false"/>
+		</field>
 		<field name="Hash" uuid="C2B04BC140B54EAE9F9F693441865CF1" type="10" limiting_length="40" id="9"/>
 		<field name="Cmd_Type" uuid="40325C07DE9644F6AA2D3F2B94F0E167" type="10" id="10"/>
 		<field name="Cmd_Event" uuid="DB9C9A72F8D940698F9693FFCCA47EA3" type="10" id="11"/>

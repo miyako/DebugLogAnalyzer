@@ -50,6 +50,14 @@
           <source>Time</source>
           <target>Time</target>
         </trans-unit>
+        <trans-unit resname="Counts">
+          <source>Counts</source>
+          <target>Counts</target>
+        </trans-unit>
+        <trans-unit resname="Average">
+          <source>Average</source>
+          <target>Average</target>
+        </trans-unit>
       </group>
     </body>
   </file>

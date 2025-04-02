@@ -3,6 +3,18 @@ property updateInterval : Real
 property startTime : Integer
 property duration : Text
 property logLines : Object
+property length : Integer
+property commandCounts : Object
+property commandAverages : Object
+property commandTimes : Object
+
+property methodCounts : Object
+property methodAverages : Object
+property methodTimes : Object
+
+property functionCounts : Object
+property functionAverages : Object
+property functionTimes : Object
 
 Class extends _Form
 
@@ -11,6 +23,8 @@ Class constructor
 	Super:C1705()
 	
 	This:C1470.logFile:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	
+	This:C1470.length:=10
 	
 	//MARK:-Form Object States
 	
@@ -120,6 +134,8 @@ Function onDrop()
 	
 Function onLoad()
 	
+	OBJECT SET FORMAT:C236(*; "Column15"; "#,###,###,##0.0")
+	
 Function onUnload()
 	
 	Form:C1466._killAll()
@@ -179,6 +195,16 @@ Function open($paths : Collection)
 	
 	This:C1470.logFile.col:=$paths.map(This:C1470._mapPathsToFiles).orderByMethod(This:C1470._sortBySuffix)
 	
+	This:C1470.commandCounts:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.commandAverages:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.commandTimes:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.methodCounts:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.methodAverages:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.methodTimes:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.functionCounts:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.functionAverages:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	This:C1470.functionTimes:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	
 	$countCores:=This:C1470.countCores>This:C1470.logFile.col.length ? This:C1470.countCores : This:C1470.logFile.col.length
 	
 	If (This:C1470.useMultipleCores)
@@ -191,13 +217,17 @@ Function open($paths : Collection)
 	
 	$ctx.workerFunction:=This:C1470._processFile
 	$ctx.onRefresh:=This:C1470._onRefresh
+	$ctx.onReadFile:=This:C1470._onReadFile
 	$ctx.onStart:=This:C1470._onStart
 	$ctx.onFinish:=This:C1470._onFinish
+	$ctx.onYield:=This:C1470._onYield
+	$ctx.onFilter:=This:C1470._onFilter
 	$ctx.countCores:=$countCores
 	$ctx.useMultipleCores:=This:C1470.useMultipleCores
 	$ctx.updateInterval:=This:C1470.updateInterval
+	$ctx.length:=This:C1470.length
 	
-	This:C1470.start().toggleListSelection()
+	This:C1470.start().updateDuration().toggleListSelection()
 	
 	var $workerNames : Collection
 	var $workerName : Text
@@ -229,6 +259,7 @@ Function _open($ctx : Object)
 	$debugLogInfo:={}
 	
 	var $file : 4D:C1709.File
+	$ctx.files:=$ctx.files.copy(ck shared:K85:29)
 	$file:=$ctx.files.first()
 	
 	If ($file#Null:C1517)
@@ -252,20 +283,38 @@ Function _open($ctx : Object)
 			End for each 
 			$ctx.parsers:=$parsers.copy(ck shared:K85:29)
 			For each ($workerName; $ctx.workerNames)
-				CALL WORKER:C1389($workerName; $ctx.workerFunction; $ctx)
+				CALL WORKER:C1389($workerName; $ctx.workerFunction; $debugLogInfo; $ctx)
 			End for each 
 		Else 
 			$first.continue($ctx)
-			CALL FORM:C1391($ctx.window; $ctx.onFinish; $file; $ctx)
-			For each ($file; $ctx.files.slice(1))
+			$ctx.files:=$ctx.files.filter($ctx.onFilter; $first.file.path)
+			$ctx.onReadFile($debugLogInfo; $file; $ctx)
+			CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
+			For each ($file; $ctx.files)
 				$parser:=cs:C1710._ClassicDebugLogParser.new($file; $first)
 				$parser.continue($ctx)
-				CALL FORM:C1391($ctx.window; $ctx.onFinish; $file; $ctx)
+				$ctx.files:=$ctx.files.filter($ctx.onFilter; $parser.file.path)
+				$ctx.onReadFile($debugLogInfo; $file; $ctx)
+				CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
 			End for each 
 		End if 
 	End if 
 	
-Function _processFile($ctx : Object)
+Function _onReadFile($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
+	
+	If ($ctx.files.length=0)
+		var $analyzer : cs:C1710._ClassicDebugLogAnalyzer
+		$analyzer:=cs:C1710._ClassicDebugLogAnalyzer.new($ctx.length)
+		var $logs : cs:C1710.Log_LinesSelection
+		$logs:=ds:C1482.Log_Lines.query("DL_ID == :1"; $debugLogInfo.Id)
+		$analyzer.accumulate($logs)
+		$analyzer.average($ctx)
+		$analyzer.count($ctx)
+		$analyzer.time($ctx)
+		$debugLogInfo.analytics:=$analyzer.analytics()
+	End if 
+	
+Function _processFile($debugLogInfo : Object; $ctx : Object)
 	
 	var $that : Object
 	$that:=$ctx.parsers.shift()
@@ -277,10 +326,19 @@ Function _processFile($ctx : Object)
 		$parser:=cs:C1710._ClassicDebugLogParser.new()
 		$parser.toObject($parser; $that).reopen()
 		$parser.continue($ctx)
-		CALL FORM:C1391($ctx.window; $ctx.onFinish; $parser.file; $ctx)
+		$ctx.files:=$ctx.files.filter($ctx.onFilter; $parser.file.path)
+		$ctx.onReadFile($debugLogInfo; $parser.file; $ctx)
+		CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $parser.file; $ctx)
 	End if 
 	
-	CALL WORKER:C1389(Current process name:C1392; $ctx.workerFunction; $ctx)
+	CALL WORKER:C1389(Current process name:C1392; $ctx.workerFunction; $debugLogInfo; $ctx)
+	
+Function _onFilter($event : Object; $path : Text)
+	
+	var $file : 4D:C1709.File
+	$file:=$event.value
+	
+	$event.result:=($file.path#$path)
 	
 Function _sortBySuffix($event : Object)
 	
@@ -331,7 +389,11 @@ Function _onStart($debugLogInfo : Object; $ctx : Object)
 	
 	$this.logLines:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 	
-Function _onFinish($file : 4D:C1709.File; $ctx : Object)
+Function _onYield()
+	
+	Form:C1466.updateDuration()
+	
+Function _onFinish($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 	
 	$this:=Form:C1466
 	
@@ -350,6 +412,18 @@ Function _onFinish($file : 4D:C1709.File; $ctx : Object)
 		$col:=ds:C1482.Log_Lines.query("DL_ID == :1 order by Execution_Time desc"; $this.debugLogInfo.Id)
 		
 		$this.logLines:={col: $col; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		
+		$analytics:=$debugLogInfo.analytics
+		
+		Form:C1466.commandCounts:={col: $analytics.counts.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.commandAverages:={col: $analytics.averages.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.commandTimes:={col: $analytics.times.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.methodCounts:={col: $analytics.counts.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.methodAverages:={col: $analytics.averages.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.methodTimes:={col: $analytics.times.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.functionCounts:={col: $analytics.counts.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.functionAverages:={col: $analytics.averages.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		Form:C1466.functionTimes:={col: $analytics.times.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		
 		For each ($workerName; $ctx.workerNames)
 			KILL WORKER:C1390($workerName)

@@ -22,6 +22,60 @@ header  {
 
 @media (prefers-color-scheme: light){
 
+	listbox.commands {
+		alternateFill:  #EEE7EE;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: dark){
+
+	listbox.commands {
+		alternateFill: #272828;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: light){
+
+	listbox.methods {
+		alternateFill:  #eaeee7;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: dark){
+
+	listbox.methods {
+		alternateFill: #272828;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: light){
+
+	listbox.functions {
+		alternateFill:  #efefe2;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: dark){
+
+	listbox.functions {
+		alternateFill: #272828;
+		fill: automatic;
+	}
+
+}
+
+@media (prefers-color-scheme: light){
+
 	listbox.records {
 		alternateFill:  #E8EEEE;
 		fill: automatic;
