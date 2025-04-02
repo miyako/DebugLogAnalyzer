@@ -29,13 +29,7 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * support new classic "human readable" debug log file (see below)
 * support dark mode
 
-## TODO
-
-- [ ] Top 20 Project methods by execution count
-- [ ] Top 20 4D Commands by execution count
-- [ ] Top 20 Plug-in methods by execution count
-- [ ] Top 20 Form methods by execution count
-- [ ] Top 20 Object methods by execution count
+<img src="https://github.com/user-attachments/assets/b2697d25-f548-4082-9c7e-79dea44be984" width=800 height=auto />
 
 ## page 1
 
