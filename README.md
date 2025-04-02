@@ -31,8 +31,6 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 
 ## TODO
 
-- [ ] Test current process debug log
-- [ ] Text debug log file generated in compiled mode 
 - [ ] Top 20 Project methods by execution count
 - [ ] Top 20 4D Commands by execution count
 - [ ] Top 20 Plug-in methods by execution count
