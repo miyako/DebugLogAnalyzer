@@ -136,6 +136,8 @@ Function onDrop()
 Function onLoad()
 	
 	OBJECT SET FORMAT:C236(*; "Column15"; "#,###,###,##0.0")
+	OBJECT SET FORMAT:C236(*; "Column17"; "#,###,###,##0.0")
+	OBJECT SET FORMAT:C236(*; "Column23"; "#,###,###,##0.0")
 	
 Function onUnload()
 	

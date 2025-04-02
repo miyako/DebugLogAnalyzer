@@ -169,11 +169,9 @@ Function _v($flag : Integer; $ctx : Object)
 	
 	var $MS_Stamp_cmd; $MS_Stamp_form; $MS_Stamp_meth : Collection
 	
-	If ($flag=1)
-		$MS_Stamp_cmd:=[]
-		$MS_Stamp_form:=[]
-		$MS_Stamp_meth:=[]
-	End if 
+	$MS_Stamp_cmd:=[]
+	$MS_Stamp_form:=[]
+	$MS_Stamp_meth:=[]
 	
 	var $o : Object
 	var $ms : Text
@@ -374,8 +372,18 @@ is not synchronous at the ms/process level
 						End if 
 						Case of 
 							: ($token="form")  //start
+								If (Match regex:C1019("(.+) during (.+)"; $info; 1; $pos; $len))
+									$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+									$Command:=Substring:C12($info; $pos{1}; $len{1})
+									$MS_Stamp_form.push({Command: $Command; Cmd_Event: $Cmd_Event})
+								End if 
 								continue
 							: ($token="obj")  //start
+								If (Match regex:C1019("(.+) during (.+)"; $info; 1; $pos; $len))
+									$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+									$Command:=Substring:C12($info; $pos{1}; $len{1})
+									$MS_Stamp_form.push({Command: $Command; Cmd_Event: $Cmd_Event})
+								End if 
 								continue
 							: ($token="cmd")  //start
 								continue
@@ -387,8 +395,12 @@ is not synchronous at the ms/process level
 									$Command:=Substring:C12($info; $pos{1}; $len{1})
 									Case of 
 										: ($token="form") || ($token="obj")
-											If (Match regex:C1019("(.+) during (\\.+)"; $info; 1; $pos; $len))
-												$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+											If (Match regex:C1019("(.+) during \\."; $info; 1; $pos; $len))
+												If ($MS_Stamp_form.length#0)
+													$Cmd_Event:=$MS_Stamp_form.pop().Cmd_Event
+												Else 
+													$Cmd_Event:=""  //event name is only present at start
+												End if 
 												$Command:=Substring:C12($info; $pos{1}; $len{1})
 												This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
 												$milliseconds:=Milliseconds:C459
