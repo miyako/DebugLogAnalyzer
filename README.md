@@ -6,6 +6,19 @@
 # DebugLogAnalyzer
 based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009)
 
+## dependencies.json
+
+ ```json
+{
+	"dependencies": {
+		"DebugLogAnalyzer": {
+			"github": "miyako/DebugLogAnalyzer",
+			"version": "latest"
+		}
+	}
+}
+```
+
 ## Modifications
 
 * resolve data file alias or shortcut
@@ -15,22 +28,6 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * use preëmptive process in compiled mode
 * support new classic "human readable" debug log file (see below)
 * support dark mode
-
-## TODO
-
-- [ ] Test current process debug log
-- [ ] Text debug log file generated in compiled mode 
-- [ ] Top 20 Project methods by execution count
-- [ ] Top 20 4D Commands by execution count
-- [ ] Top 20 Plug-in methods by execution count
-- [ ] Top 20 Form methods by execution count
-- [ ] Top 20 Object methods by execution count
-- [ ] Top 20 Project methods by average execution time
-- [ ] Top 20 Form methods by average execution time
-- [ ] Top 20 Object methods by average execution time
-- [ ] Top 20 Project methods by longest execution time
-- [ ] Top 20 Form methods by longest execution time
-- [ ] Top 20 Object methods by longest execution time
 
 ## page 1
 
