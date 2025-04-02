@@ -35,10 +35,10 @@
 			"coordinates": {
 				"left": 0,
 				"top": 0,
-				"width": 107,
-				"height": 125.33203125
+				"width": 121,
+				"height": 146.33203125
 			},
-			"displayable_fields_count": 4
+			"displayable_fields_count": 5
 		}
 	},
 	"relations": {

@@ -2,11 +2,11 @@ property file : 4D:C1709.File
 property fileHandle : 4D:C1709.FileHandle
 property line1 : Text
 property isValid : Boolean
-property version : Integer
 property breakModeRead : Text
 property Log_Date : Date
 property Log_Time : Time
 property Log_MS : Integer
+property Log_Version : Integer
 property charset : Text
 property option : Object
 property Id : Integer
@@ -58,7 +58,7 @@ Function start() : Object
 			This:C1470.Log_Date:=$date
 			This:C1470.Log_Time:=$time
 			This:C1470.Log_MS:=0
-			This:C1470.version:=2
+			This:C1470.Log_Version:=2
 			This:C1470.isValid:=True:C214
 			This:C1470._getEOL()
 			
@@ -83,25 +83,21 @@ Function start() : Object
 			This:C1470.Log_Date:=$date
 			This:C1470.Log_Time:=$time
 			This:C1470.Log_MS:=$ms
-			This:C1470.version:=1
+			This:C1470.Log_Version:=1
 			This:C1470.isValid:=True:C214
 			This:C1470._getEOL()
 			
 	End case 
 	
 	If (This:C1470.isValid)
-		Case of 
-			: (This:C1470.version=2)
-				var $Debug_Logs : cs:C1710.Debug_LogsEntity
-				$Debug_Logs:=ds:C1482.Debug_Logs.new()
-				$Debug_Logs.Log_Date:=This:C1470.Log_Date
-				$Debug_Logs.Log_Time:=This:C1470.Log_Time
-				$Debug_Logs.Log_MS:=This:C1470.Log_MS
-				$Debug_Logs.save()
-				This:C1470.Id:=$Debug_Logs.Id
-			: (This:C1470.version=1)
-				//file format is too old, not supported
-		End case 
+		var $Debug_Logs : cs:C1710.Debug_LogsEntity
+		$Debug_Logs:=ds:C1482.Debug_Logs.new()
+		$Debug_Logs.Log_Date:=This:C1470.Log_Date
+		$Debug_Logs.Log_Time:=This:C1470.Log_Time
+		$Debug_Logs.Log_MS:=This:C1470.Log_MS
+		$Debug_Logs.Log_Version:=This:C1470.Log_Version
+		$Debug_Logs.save()
+		This:C1470.Id:=$Debug_Logs.Id
 	End if 
 	
 	return This:C1470.option
@@ -110,10 +106,10 @@ Function continue()
 	
 	If (This:C1470.isValid)
 		Case of 
-			: (This:C1470.version=2)
+			: (This:C1470.Log_Version=2)
 				This:C1470._v2()
-			: (This:C1470.version=1)
-				This:C1470._v1()  //file format is too old, not fully supported
+			: (This:C1470.Log_Version=1)
+				This:C1470._v1()
 		End case 
 	End if 
 	
@@ -121,6 +117,16 @@ Function _v($flag : Integer)
 	
 	ARRAY LONGINT:C221($pos; 0)
 	ARRAY LONGINT:C221($len; 0)
+	
+	var $MS_Stamp_cmd; $MS_Stamp_form; $MS_Stamp_meth : Collection
+	
+	If ($flag=1)
+		$MS_Stamp_cmd:=[]
+		$MS_Stamp_form:=[]
+		$MS_Stamp_meth:=[]
+	End if 
+	
+	var $o : Object
 	
 	Repeat 
 		
@@ -130,111 +136,215 @@ Function _v($flag : Integer)
 			break
 		End if 
 		
-		var $MS_Stamp; $last_MS_Stamp : Integer
+		var $MS_Stamp : Integer
 		
 		$values:=Split string:C1554($line; "\t")
 		
 		If ($values.length>0)
 			Case of 
 				: ($flag=2)
-					$MS_Stamp:=Num:C11($values[0])
+					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
 				: ($flag=1)
+					$line:=$values[0]
 					If (Match regex:C1019("(\\d+) p=(\\d+) puid=(\\d+)(.*)"; $line; 1; $pos; $len))
-						$last_MS_Stamp:=$MS_Stamp
 						$MS_Stamp:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
 						$PID:=Num:C11(Substring:C12($line; $pos{2}; $len{2}))
 						$UPID:=Num:C11(Substring:C12($line; $pos{3}; $len{3}))
 						$line:=Substring:C12($line; $pos{4}; $len{4})
+						Case of 
+							: (Match regex:C1019("\\s+([^:]+): (.+)"; $line; 1; $pos; $len))  //2 spaces in case of start token
+								$Stack_Level:=0
+								$token:=Substring:C12($line; $pos{1}; $len{1})
+								$info:=Substring:C12($line; $pos{2}; $len{2})
+							: (Match regex:C1019("\\s+(.+)"; $line; 1; $pos; $len))
+								$token:=Substring:C12($line; $pos{1}; $len{1})
+								$info:=""
+								//end_form, end_obj has no info
+							Else 
+								If ($values.length>1)
+									$line:=$values[1]
+									If (Match regex:C1019("\\((\\d+)\\)\\s+([^:]+): (.+)"; $line; 1; $pos; $len))  //2 spaces in case of start token
+										$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
+										$token:=Substring:C12($line; $pos{2}; $len{2})
+										$info:=Substring:C12($line; $pos{3}; $len{3})
+									End if 
+								End if 
+						End case 
 					End if 
+					Case of 
+						: ($token="Log level")
+							continue
+						: ($token="end_form") || ($token="end_obj")
+							$Command:=$info
+							$Execution_Time:=0
+/*
+no information in end tag;
+use p, pid only
+*/
+							If ($MS_Stamp_form.length#0)
+								$o:=$MS_Stamp_form.query("PID === :1 and UPID == :2 and Cmd_Event != :3"; \
+									$PID; $UPID; "").orderBy("MS_Stamp desc").first()
+							End if 
+							If ($o#Null:C1517)
+								$Execution_Time:=$MS_Stamp-$o.MS_Stamp
+								$MS_Stamp_form.remove($MS_Stamp_form.indexOf($o))
+							Else 
+								//no start record in stack
+							End if 
+						: ($token="end_meth")
+							$Command:=$info
+							$Execution_Time:=0
+							$Cmd_Event:=""
+							If ($MS_Stamp_meth.length#0)
+								$o:=$MS_Stamp_meth.query("Command === :1 and Stack_Level === :2 and PID === :3 and UPID == :4 and Cmd_Event == :5"; \
+									$Command; $Stack_Level; $PID; $UPID; $Cmd_Event).orderBy("MS_Stamp desc").first()
+								If ($o#Null:C1517)
+									$Execution_Time:=$MS_Stamp-$o.MS_Stamp
+									$MS_Stamp_meth.remove($MS_Stamp_meth.indexOf($o))
+								Else 
+									//no start record in stack
+								End if 
+							End if 
+						: ($token="meth")
+							$Cmd_Event:=""
+							$MS_Stamp_meth.push({\
+								MS_Stamp: $MS_Stamp; \
+								Command: $info; \
+								Cmd_Event: $Cmd_Event; \
+								Stack_Level: $Stack_Level; \
+								PID: $PID; \
+								UPID: $UPID})  //start
+							continue
+						: ($token="plugInName")
+							If (Match regex:C1019("(.+); [^:]+: ([^\\.]+)\\.([^\\.]+)"; $info; 1; $pos; $len))
+								$token:="plugin"
+								$Cmd_Event:=Substring:C12($info; $pos{3}; $len{3})
+								$Command:=Substring:C12($info; $pos{1}; $len{1})+" ("+Substring:C12($info; $pos{2}; $len{2})+")"
+							End if 
+						: ($token="form") || ($token="obj")
+							If (Match regex:C1019("(.+); event: (\\.+)"; $info; 1; $pos; $len))
+								$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+								$Command:=Substring:C12($info; $pos{1}; $len{1})
+								$MS_Stamp_form.push({\
+									MS_Stamp: $MS_Stamp; \
+									Command: $info; \
+									Cmd_Event: $Cmd_Event; \
+									Stack_Level: $Stack_Level; \
+									PID: $PID; \
+									UPID: $UPID})  //start
+								continue
+							End if 
+						: ($token="cmd")
+							If (Match regex:C1019("(.+)\\.$"; $info; 1; $pos; $len))
+								$Command:=Substring:C12($info; $pos{1}; $len{1})
+								$Execution_Time:=0
+								$Cmd_Event:=""
+								If ($MS_Stamp_cmd.length#0)
+/*
+can't use pop() because the debug log 
+is not synchronous at the ms/process level
+*/
+									$o:=$MS_Stamp_cmd.query("Command === :1 and Stack_Level === :2 and PID === :3 and UPID == :4 and Cmd_Event == :5"; \
+										$Command; $Stack_Level; $PID; $UPID; $Cmd_Event).orderBy("MS_Stamp desc").first()
+									If ($o#Null:C1517)
+										$Execution_Time:=$MS_Stamp-$o.MS_Stamp
+										$MS_Stamp_cmd.remove($MS_Stamp_cmd.indexOf($o))
+									Else 
+										//no start record in stack
+									End if 
+								End if 
+							Else 
+								$MS_Stamp_cmd.push({\
+									MS_Stamp: $MS_Stamp; \
+									Command: $info; \
+									Cmd_Event: $Cmd_Event; \
+									Stack_Level: $Stack_Level; \
+									PID: $PID; \
+									UPID: $UPID})  //start
+								continue
+							End if 
+						Else 
+							TRACE:C157
+					End case 
+					This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+					continue
 			End case 
 		End if 
 		
-		If ($values.length>1)
-			$line:=$values[1]
-			Case of 
-				: ($flag=2)
-					If (Match regex:C1019("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3}) p=(\\d+) puid=(\\d+)"; $line; 1; $pos; $len))
-						$year:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
-						$month:=Num:C11(Substring:C12($line; $pos{2}; $len{2}))
-						$day:=Num:C11(Substring:C12($line; $pos{3}; $len{3}))
-						$hh:=Num:C11(Substring:C12($line; $pos{4}; $len{4}))
-						$mm:=Num:C11(Substring:C12($line; $pos{5}; $len{5}))
-						$ss:=Num:C11(Substring:C12($line; $pos{6}; $len{6}))
-						$ms:=Num:C11(Substring:C12($line; $pos{7}; $len{7}))
-						$PID:=Num:C11(Substring:C12($line; $pos{8}; $len{8}))
-						$UPID:=Num:C11(Substring:C12($line; $pos{9}; $len{9}))
-					End if 
-				: ($flag=1)
-					If (Match regex:C1019("\\((\\d+)\\) ([^:]+):\\s+(.+)"; $line; 1; $pos; $len))
+		If ($flag=2)
+			If ($values.length>1)
+				$line:=$values[1]
+				If (Match regex:C1019("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3}) p=(\\d+) puid=(\\d+)"; $line; 1; $pos; $len))
+					$year:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
+					$month:=Num:C11(Substring:C12($line; $pos{2}; $len{2}))
+					$day:=Num:C11(Substring:C12($line; $pos{3}; $len{3}))
+					$hh:=Num:C11(Substring:C12($line; $pos{4}; $len{4}))
+					$mm:=Num:C11(Substring:C12($line; $pos{5}; $len{5}))
+					$ss:=Num:C11(Substring:C12($line; $pos{6}; $len{6}))
+					$ms:=Num:C11(Substring:C12($line; $pos{7}; $len{7}))
+					$PID:=Num:C11(Substring:C12($line; $pos{8}; $len{8}))
+					$UPID:=Num:C11(Substring:C12($line; $pos{9}; $len{9}))
+				End if 
+				If ($values.length>2)
+					$line:=$values[2]
+					If (Match regex:C1019("\\((\\d+)\\)\\s+([^:]+): (.+)"; $line; 1; $pos; $len))  //2 spaces in case of start token
 						$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
 						$token:=Substring:C12($line; $pos{2}; $len{2})
 						$info:=Substring:C12($line; $pos{3}; $len{3})
-						If ($token="cmd") && (Match regex:C1019("(.+)\\.$"; $info; 1; $pos; $len))
-							$Execution_Time:=$MS_Stamp-$last_MS_Stamp
-							$Command:=Substring:C12($info; $pos{1}; $len{1})
-							This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; "")
-							continue
-						Else 
-/*
-in this version, the duration needs to be calculated by
-storing the start record of each entry
-*/
-							//TODO:compute execution time
-							$Execution_Time:=0
-						End if 
-					End if 
-			End case 
-			
-			If ($values.length>2)
-				$line:=$values[2]
-				If (Match regex:C1019("\\((\\d+)\\)\\s+([^:]+):\\s+(.+)"; $line; 1; $pos; $len))
-					$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
-					$token:=Substring:C12($line; $pos{2}; $len{2})
-					$info:=Substring:C12($line; $pos{3}; $len{3})
-					
-					Case of 
-						: ($token="task start")
-							continue
-					End case 
-					
-					$Execution_Time:=0
-					
-					If (Match regex:C1019("(.+)\\s+([0-9<]+)\\s+ms$"; $info; 1; $pos; $len))
-						$ms:=Substring:C12($info; $pos{2}; $len{2})
-						$info:=Substring:C12($info; $pos{1}; $len{1})
-						If ($ms#"<")
-							$Execution_Time:=Num:C11($ms)
-						End if 
-					End if 
-					
-					Case of 
-						: (Match regex:C1019("end_(.+)"; $token; 1; $pos; $len))
-							$token:=Substring:C12($token; $pos{1}; $len{1})
-							If (Match regex:C1019("(.+)\\.\\s*"; $info; 1; $pos; $len))
-								$Command:=Substring:C12($line; $pos{1}; $len{1})
-								Case of 
-									: ($token="form") || ($token="obj")
-										If (Match regex:C1019("(.+) during (\\.+)"; $info; 1; $pos; $len))
-											$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
-											$Command:=Substring:C12($info; $pos{1}; $len{1})
-											This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
-										End if 
-										continue
-								End case 
-								This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; "")
+						Case of 
+							: ($token="task start")
 								continue
+						End case 
+						$Execution_Time:=0
+						If (Match regex:C1019("(.+)\\s+([0-9<]+)\\s+ms$"; $info; 1; $pos; $len))
+							$ms:=Substring:C12($info; $pos{2}; $len{2})
+							$info:=Substring:C12($info; $pos{1}; $len{1})
+							If ($ms#"<")
+								$Execution_Time:=Num:C11($ms)
 							End if 
-						: ($token="plugInName")
-							If (Match regex:C1019("(.+)\\.\\s*"; $info; 1; $pos; $len))
-								$info:=Substring:C12($line; $pos{1}; $len{1})
-								If (Match regex:C1019("(.+) end_externCall: (\\d+)"; $info; 1; $pos; $len))
-									$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+						End if 
+						Case of 
+							: ($token="form")  //start
+								continue
+							: ($token="obj")  //start
+								continue
+							: ($token="cmd")  //start
+								continue
+							: ($token="mbr")  //start
+								continue
+							: (Match regex:C1019("end_(.+)"; $token; 1; $pos; $len))  //end_form|obj has event information
+								$token:=Substring:C12($token; $pos{1}; $len{1})
+								If (Match regex:C1019("(.+)\\.\\s*"; $info; 1; $pos; $len))
 									$Command:=Substring:C12($info; $pos{1}; $len{1})
-									This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; "plugin"; $Cmd_Event)
+									Case of 
+										: ($token="form") || ($token="obj")
+											If (Match regex:C1019("(.+) during (\\.+)"; $info; 1; $pos; $len))
+												$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+												$Command:=Substring:C12($info; $pos{1}; $len{1})
+												This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+											End if 
+											continue
+										: ($token="cmd") || ($token="meth") || ($token="mbr")
+											$Cmd_Event:=""
+									End case 
+									This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; "")
 									continue
 								End if 
-							End if 
-					End case 
+							: ($token="plugInName")  //end_externCall has entry point number
+								$token:="plugin"
+								If (Match regex:C1019("(.+)\\.\\s*"; $info; 1; $pos; $len))
+									$info:=Substring:C12($info; $pos{1}; $len{1})
+									If (Match regex:C1019("(.+) end_externCall: (\\d+)"; $info; 1; $pos; $len))
+										$Cmd_Event:=Substring:C12($info; $pos{2}; $len{2})
+										$Command:=Substring:C12($info; $pos{1}; $len{1})
+										This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+										continue
+									End if 
+								Else 
+									continue  //start
+								End if 
+						End case 
+					End if 
 				End if 
 			End if 
 		End if 
@@ -285,9 +395,9 @@ Function _getEOL() : cs:C1710._ClassicDebugLogParser
 	This:C1470.fileHandle:=Null:C1517
 	
 	Case of 
-		: (This:C1470.version=2)
+		: (This:C1470.Log_Version=2)
 			This:C1470.charset:="utf-8"
-		: (This:C1470.version=1)
+		: (This:C1470.Log_Version=1)
 			If (Get database localization:C1009(Internal 4D localization:K5:24)="ja")
 				This:C1470.charset:="windows-31j"
 			Else 
