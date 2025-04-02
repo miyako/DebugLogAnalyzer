@@ -6,6 +6,16 @@
 # DebugLogAnalyzer
 based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009)
 
+## Modifications
+
+* resolve data file alias or shortcut
+* `4D.FileHandle` instead of `Open document`
+* `CALL FORM` instead of `POST OUTSIDE CALL`
+* `CALL WORKER` instead of `New process`
+* use preëmptive process in compiled mode
+* support new classic "human readable" debug log file (see below)
+* support dark mode
+
 ## Features
 
 only the classic "human readable" debug log file can be analysed.
