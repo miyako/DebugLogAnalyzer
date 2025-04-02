@@ -1,4 +1,7 @@
 property logFile : Object
+property updateInterval : Real
+property startTime : Integer
+property duration : Text
 
 Class extends _Form
 
@@ -7,6 +10,14 @@ Class constructor
 	Super:C1705()
 	
 	This:C1470.logFile:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	
+	//MARK:-Form Object States
+	
+Function toggleSelectDataFile() : cs:C1710.DebugLogAnalyzerForm
+	
+	OBJECT SET ENABLED:C1123(*; "open"; Not:C34(This:C1470.isRunning))
+	
+	return This:C1470
 	
 	//MARK:-Form Events
 	
@@ -100,11 +111,93 @@ Function onLoad()
 	
 Function onUnload()
 	
+	//MARK:-
+	
+Function start() : cs:C1710.DebugLogAnalyzerForm
+	
+	This:C1470.startTime:=Milliseconds:C459
+	
+	This:C1470.isRunning:=True:C214
+	This:C1470.toggleSelectDataFile()
+	
+	return This:C1470
+	
+Function stop() : cs:C1710.DebugLogAnalyzerForm
+	
+	This:C1470.isRunning:=False:C215
+	This:C1470.toggleSelectDataFile()
+	
+	return This:C1470
+	
+Function _getWorkerName($i : Integer) : Text
+	
+	If ($i=0)
+		return "DataLogAnalyzer"
+	Else 
+		return ["DataLogAnalyzer"; " "; "("; $i; ")"].join("")
+	End if 
+	
 Function open($paths : Collection)
 	
 	This:C1470.logFile:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 	
 	This:C1470.logFile.col:=$paths.map(This:C1470._mapPathsToFiles).orderByMethod(This:C1470._sortBySuffix)
+	
+	If (This:C1470.useMultipleCores)
+		This:C1470.updateInterval:=This:C1470.countCores*This:C1470.updateIntervalUnit
+	Else 
+		This:C1470.updateInterval:=This:C1470.updateIntervalUnit
+	End if 
+	
+	$ctx:={files: This:C1470.logFile.col; window: Current form window:C827}
+	
+	//$ctx.onFileInfo:=This._onFileInfo
+	//$ctx.onTableInfo:=This._onTableInfo
+	//$ctx.onTableStats:=This._onTableStats
+	$ctx.onFinish:=This:C1470._onFinish
+	$ctx.countCores:=This:C1470.countCores
+	$ctx.useMultipleCores:=This:C1470.useMultipleCores
+	//$ctx.workerFunction:=This._processTable
+	$ctx.updateInterval:=This:C1470.updateInterval
+	$ctx.dispatchInterval:=This:C1470.dispatchInterval
+	
+	This:C1470.start()
+	
+	var $workerNames : Collection
+	var $workerName : Text
+	
+	$workerNames:=[]
+	
+	$workerName:=This:C1470._getWorkerName(0)
+	$workerNames.push($workerName)
+	
+	$ctx.workerNames:=$workerNames
+	
+	For each ($workerName; $workerNames)
+		CALL WORKER:C1389($workerName; Formula:C1597(preemptiveWorker); $ctx)
+	End for each 
+	
+	CALL WORKER:C1389($workerNames[0]; This:C1470._open; $ctx)
+	
+Function _open($ctx : Object)
+	
+	$debugLogInfo:={}
+	
+	var $file : 4D:C1709.File
+	$file:=$ctx.files.first()
+	
+	If ($file#Null:C1517)
+		var $first; $parser : cs:C1710._ClassicDebugLogParser
+		$first:=cs:C1710._ClassicDebugLogParser.new($file)
+		$option:=$first.start()  //use same option for circular logs
+		$first.continue()
+		For each ($file; $ctx.files.slice(1))
+			$parser:=cs:C1710._ClassicDebugLogParser.new($file; $first)
+			$parser.continue()
+		End for each 
+	End if 
+	
+	CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $ctx)
 	
 Function _sortBySuffix($event : Object)
 	
@@ -136,3 +229,13 @@ Function _mapPathsToFiles($event : Object)
 	End if 
 	
 	$event.result:=$file
+	
+Function _onFinish($debugLogInfo : Object; $ctx : Object)
+	
+	$this:=Form:C1466
+	
+	$this.stop()
+	
+	For each ($workerName; $ctx.workerNames)
+		KILL WORKER:C1390($workerName)
+	End for each 

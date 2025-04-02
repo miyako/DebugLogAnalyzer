@@ -114,33 +114,12 @@
 							"width": 0
 						}
 					]
-				},
-				"Input": {
-					"type": "input",
-					"left": 403,
-					"top": 120,
-					"width": 142,
-					"height": 81,
-					"dataSourceTypeHint": "object",
-					"dataSource": "Form:C1466.logFile.item"
-				},
-				"Button": {
-					"type": "button",
-					"text": "Button",
-					"top": 275,
-					"left": 403,
-					"width": 65,
-					"height": 90,
-					"events": [
-						"onClick"
-					],
-					"method": "ObjectMethods/Button.4dm"
 				}
 			}
 		}
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 52,
+	"geometryStamp": 54,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",

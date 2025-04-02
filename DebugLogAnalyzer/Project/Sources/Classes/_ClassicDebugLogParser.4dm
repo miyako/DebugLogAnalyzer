@@ -11,16 +11,20 @@ property charset : Text
 property option : Object
 property Id : Integer
 
-Class constructor($file : 4D:C1709.File; $option : Object)
+Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogParser)
 	
 	This:C1470.file:=$file
-	If ($option=Null:C1517)
-		This:C1470.fileHandle:=$file.open("read")
-	Else 
-		This:C1470.fileHandle:=$file.open($option)
-	End if 
-	
-	This:C1470.line1:=This:C1470.fileHandle.readLine()
+	Case of 
+		: ($parser=Null:C1517)
+			This:C1470.fileHandle:=$file.open("read")
+			This:C1470.line1:=This:C1470.fileHandle.readLine()
+		: (OB Instance of:C1731($parser; cs:C1710._ClassicDebugLogParser)) && ($parser.option#Null:C1517)
+			This:C1470.fileHandle:=$file.open($parser.option)
+			var $attr : Text
+			For each ($attr; ["Id"; "option"; "charset"; "Log_Version"; "Log_MS"; "Log_Time"; "Log_Date"; "breakModeRead"; "isValid"; "line1"])
+				This:C1470[$attr]:=$parser[$attr]
+			End for each 
+	End case 
 	
 Function start() : Object
 	
@@ -127,6 +131,7 @@ Function _v($flag : Integer)
 	End if 
 	
 	var $o : Object
+	var $ms : Text
 	
 	Repeat 
 		
@@ -264,8 +269,6 @@ is not synchronous at the ms/process level
 									UPID: $UPID})  //start
 								continue
 							End if 
-						Else 
-							TRACE:C157
 					End case 
 					This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
 					continue
@@ -282,7 +285,7 @@ is not synchronous at the ms/process level
 					$hh:=Num:C11(Substring:C12($line; $pos{4}; $len{4}))
 					$mm:=Num:C11(Substring:C12($line; $pos{5}; $len{5}))
 					$ss:=Num:C11(Substring:C12($line; $pos{6}; $len{6}))
-					$ms:=Num:C11(Substring:C12($line; $pos{7}; $len{7}))
+					$milliseconds:=Num:C11(Substring:C12($line; $pos{7}; $len{7}))
 					$PID:=Num:C11(Substring:C12($line; $pos{8}; $len{8}))
 					$UPID:=Num:C11(Substring:C12($line; $pos{9}; $len{9}))
 				End if 
