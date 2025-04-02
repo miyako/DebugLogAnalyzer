@@ -1,3 +1,54 @@
 {
-	"tables": {}
+	"tables": {
+		"Log_Lines": {
+			"color": {
+				"red": 255,
+				"green": 255,
+				"blue": 255,
+				"alpha": 0
+			},
+			"coordinates": {
+				"left": 291.53125,
+				"top": 0,
+				"width": 154,
+				"height": 285.29296875
+			},
+			"displayable_fields_count": 11,
+			"fields": {
+				"Cmd_Event": {
+					"color": {
+						"red": 255,
+						"green": 255,
+						"blue": 255,
+						"alpha": 0
+					}
+				}
+			}
+		},
+		"Debug_Logs": {
+			"color": {
+				"red": 255,
+				"green": 255,
+				"blue": 255,
+				"alpha": 0
+			},
+			"coordinates": {
+				"left": 0,
+				"top": 0,
+				"width": 107,
+				"height": 125.33203125
+			},
+			"displayable_fields_count": 4
+		}
+	},
+	"relations": {
+		"D9CFF4D083534CC0A7522F661739008B": {
+			"color": {
+				"red": 255,
+				"green": 255,
+				"blue": 255,
+				"alpha": 0
+			}
+		}
+	}
 }

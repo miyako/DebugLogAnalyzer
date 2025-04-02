@@ -2,6 +2,91 @@
 <!DOCTYPE base SYSTEM "http://www.4d.com/dtd/2007/base.dtd" >
 <base name="DebugLogAnalyzer" uuid="FC59952471B34DACBCC8E3A43F80A49B" collation_locale="ja">
 	<schema name="DEFAULT_SCHEMA"/>
+	<table name="Debug_Logs" uuid="59057B748D22421399D15A68B8325C33" id="1">
+		<field name="Id" uuid="D837F447BBBE4CF6BBE8469C0D391C4F" type="4" unique="true" autosequence="true" not_null="true" id="1"/>
+		<field name="Log_Date" uuid="D6D6728712714D0FA1F36FB9DB468F5F" type="8" id="2"/>
+		<field name="Log_Time" uuid="6E12438CA7FE4F9B9B44BD12485C0318" type="9" id="3"/>
+		<field name="Log_MS" uuid="10F75C514EE14BB0996B17B03EEFE731" type="4" id="4"/>
+		<primary_key field_name="Id" field_uuid="D837F447BBBE4CF6BBE8469C0D391C4F"/>
+	</table>
+	<table name="Log_Lines" uuid="57FF7BB6FE3C434C94600C286EAA495D" id="2">
+		<field name="Id" uuid="25A4BE5002884B52BAE80AF86B12C1AC" type="4" unique="true" autosequence="true" not_null="true" id="1"/>
+		<field name="DL_ID" uuid="422A8A42902D47958A640B31A9EA53A7" type="4" id="2"/>
+		<field name="Cmd_Event" uuid="DB9C9A72F8D940698F9693FFCCA47EA3" type="10" id="3">
+			<field_extra multi_line="false"/>
+		</field>
+		<field name="MS_Stamp" uuid="671D513DB37E451FA51FC70CBDE12AE8" type="4" id="4"/>
+		<field name="PID" uuid="7C70562FCD8F43A6AA7400890EE491BC" type="4" id="5"/>
+		<field name="UPID" uuid="438446DF3EB04219B50D5F5B1932FA4D" type="4" id="6"/>
+		<field name="Stack_Level" uuid="4F71F817C2B447719D72B22F5EF5A4DA" type="4" id="7"/>
+		<field name="Command" uuid="95D8CE69BD314F77AB51C1C97A582496" type="10" id="8"/>
+		<field name="Execution_Time" uuid="FEF0C94B00D54F4B8BF058A8D2816CB0" type="4" id="9"/>
+		<field name="Hash" uuid="C2B04BC140B54EAE9F9F693441865CF1" type="10" limiting_length="40" id="10"/>
+		<field name="Cmd_Type" uuid="40325C07DE9644F6AA2D3F2B94F0E167" type="10" id="11"/>
+		<primary_key field_name="Id" field_uuid="25A4BE5002884B52BAE80AF86B12C1AC"/>
+	</table>
+	<relation uuid="D9CFF4D083534CC0A7522F661739008B" name_Nto1="Debug_Log" name_1toN="Log_Lines" state="1">
+		<related_field kind="source">
+			<field_ref uuid="422A8A42902D47958A640B31A9EA53A7" name="DL_ID">
+				<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+			</field_ref>
+		</related_field>
+		<related_field kind="destination">
+			<field_ref uuid="D837F447BBBE4CF6BBE8469C0D391C4F" name="Id">
+				<table_ref uuid="59057B748D22421399D15A68B8325C33" name="Debug_Logs"/>
+			</field_ref>
+		</related_field>
+	</relation>
+	<index kind="regular" unique_keys="true" uuid="1DCF73AE048E4B4DBA34EA86C3CE3689" type="7">
+		<field_ref uuid="D837F447BBBE4CF6BBE8469C0D391C4F" name="Id">
+			<table_ref uuid="59057B748D22421399D15A68B8325C33" name="Debug_Logs"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="2990F0C4A867459AB09E2E612026AAA7" type="1">
+		<field_ref uuid="C2B04BC140B54EAE9F9F693441865CF1" name="Hash">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="309398076F5F4767AFF1F8496457AE6B" type="3">
+		<field_ref uuid="422A8A42902D47958A640B31A9EA53A7" name="DL_ID">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" unique_keys="true" uuid="4BC3ED33CDA948B58C208A43FE56B1D0" type="7">
+		<field_ref uuid="25A4BE5002884B52BAE80AF86B12C1AC" name="Id">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="550641582DE64B38AA0F74DFCF6A3D92" type="3">
+		<field_ref uuid="438446DF3EB04219B50D5F5B1932FA4D" name="UPID">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="6EBB93A114394C61BFA4E5B4A63DD335" type="3">
+		<field_ref uuid="FEF0C94B00D54F4B8BF058A8D2816CB0" name="Execution_Time">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="C12A58DCB5574EE8925553848B67064C" type="3">
+		<field_ref uuid="DB9C9A72F8D940698F9693FFCCA47EA3" name="Cmd_Event">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="E315A06422754672B71B4ABAB725F626" type="3">
+		<field_ref uuid="40325C07DE9644F6AA2D3F2B94F0E167" name="Cmd_Type">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="EA3D99B14A2D4A84AA73FB4D458E7713" type="3">
+		<field_ref uuid="671D513DB37E451FA51FC70CBDE12AE8" name="MS_Stamp">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
+	<index kind="regular" uuid="FD71F0314F604199AC3993764C0F068E" type="3">
+		<field_ref uuid="95D8CE69BD314F77AB51C1C97A582496" name="Command">
+			<table_ref uuid="57FF7BB6FE3C434C94600C286EAA495D" name="Log_Lines"/>
+		</field_ref>
+	</index>
 	<base_extra>
 		<journal_file journal_file_enabled="true"/>
 	</base_extra>
