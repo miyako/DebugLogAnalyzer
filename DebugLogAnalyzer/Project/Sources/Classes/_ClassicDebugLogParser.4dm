@@ -220,6 +220,7 @@ use p, pid only
 								$token:="plugin"
 								$Cmd_Event:=Substring:C12($info; $pos{3}; $len{3})
 								$Command:=Substring:C12($info; $pos{1}; $len{1})+" ("+Substring:C12($info; $pos{2}; $len{2})+")"
+								$Execution_Time:=0
 							End if 
 						: ($token="form") || ($token="obj")
 							If (Match regex:C1019("(.+); event: (\\.+)"; $info; 1; $pos; $len))
