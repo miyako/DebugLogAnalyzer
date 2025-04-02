@@ -258,8 +258,9 @@ Function _open($ctx : Object)
 	
 	$debugLogInfo:={}
 	
+	$ctx.paths:=$ctx.files.extract("path").copy(ck shared:K85:29)
+	
 	var $file : 4D:C1709.File
-	$ctx.files:=$ctx.files.copy(ck shared:K85:29)
 	$file:=$ctx.files.first()
 	
 	If ($file#Null:C1517)
@@ -300,8 +301,8 @@ Function _open($ctx : Object)
 	
 Function _onReadFile($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 	
-	Use ($ctx.files)
-		$ctx.files:=$ctx.files.filter($ctx.onFilter; $file.path)
+	Use ($ctx.paths)
+		$ctx.paths:=$ctx.paths.filter($ctx.onFilter; $file.path)
 	End use 
 	
 	If ($ctx.files.length=0)
@@ -336,10 +337,7 @@ Function _processFile($debugLogInfo : Object; $ctx : Object)
 	
 Function _onFilter($event : Object; $path : Text)
 	
-	var $file : 4D:C1709.File
-	$file:=$event.value
-	
-	$event.result:=($file.path#$path)
+	$event.result:=($event.value.path#$path)
 	
 Function _sortBySuffix($event : Object)
 	
