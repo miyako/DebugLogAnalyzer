@@ -221,10 +221,17 @@ Function _v($flag : Integer; $ctx : Object)
 							Else 
 								$token:="end_form"
 							End if 
-						: ($operation_type=3) || ($operation_type=4)
+						: ($operation_type=3)  //message
 							continue
-						: ($operation_type=5) || ($operation_type=6) || ($operation_type=7)
-							$token:="plugin"
+						: ($operation_type=4)  //message
+							continue
+						: ($operation_type=5)
+							$token:="plugin event"
+						: ($operation_type=6)  //not implemented
+							$token:="plugin command"
+							continue
+						: ($operation_type=7)
+							$token:="plugin callback"
 						: ($operation_type=8)
 							$token:="task"
 						: ($operation_type=9)
@@ -398,12 +405,26 @@ is not synchronous at the ms/process level
 					If ($operation_parameters#"")
 						$Command+="("+$operation_parameters+")"
 					End if 
-				: ($token="plugin")
+				: ($token="plugin callback")
 					If ($values[9]="")  //opening stack level 
 						continue
 					End if 
 					$Cmd_Event:=$Command
-					$Command:=This:C1470.resolver.getInfo($Cmd_Event)
+					$Command:=This:C1470.resolver.getCallbackInfo($Cmd_Event)
+					If ($Command="")
+						continue
+					End if 
+					$token:="plugin"
+				: ($token="plugin event")
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Cmd_Event:=$Command
+					$Command:=This:C1470.resolver.getEventInfo($Cmd_Event)
+					If ($Command="")
+						continue
+					End if 
+					$token:="plugin"
 				: ($token="task")
 					If ($values[9]="")  //opening stack level 
 						continue
