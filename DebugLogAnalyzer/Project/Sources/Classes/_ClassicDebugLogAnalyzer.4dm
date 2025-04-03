@@ -24,7 +24,7 @@ Function accumulate($logs : cs:C1710.Log_LinesSelection) : cs:C1710.Log_LinesSel
 			This:C1470.functions:=$logs.query("Cmd_Type in :1"; ["project method"; "member function"])
 		End if 
 		If (This:C1470.commands=Null:C1517)
-			This:C1470.commands:=$logs.query("Cmd_Type in :1"; ["native command"; "plugin call"])
+			This:C1470.commands:=$logs.query("Cmd_Type in :1"; ["native command"; "plugin call"; "task"])
 		End if 
 		If (This:C1470.methods=Null:C1517)
 			This:C1470.methods:=$logs.query("Cmd_Type in :1"; ["form method"; "object method"])

@@ -379,6 +379,28 @@ is not synchronous at the ms/process level
 				End if 
 				If ($values.length>2)
 					$line:=$values[2]
+					
+					Case of 
+						: (Match regex:C1019("\\((\\d+)\\)\\s+(\\S+) stop\\. ([0-9<]+)\\s+ms$"; $line; 1; $pos; $len))
+							$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
+							$token:=Substring:C12($line; $pos{2}; $len{2})
+							$ms:=Substring:C12($line; $pos{3}; $len{3})
+							$Execution_Time:=0
+							If ($ms#"<")
+								$Execution_Time:=Num:C11($ms)
+							End if 
+							This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+							$milliseconds:=Milliseconds:C459
+							If (Abs:C99($milliseconds-$time)>$interval)
+								$time:=$milliseconds
+								If ($isGUI)
+									CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+								End if 
+							End if 
+							continue
+					End case 
+					
+					
 					If (Match regex:C1019("\\((\\d+)\\)\\s+([^:]+): (.+)"; $line; 1; $pos; $len))  //2 spaces in case of start token
 						$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
 						$token:=Substring:C12($line; $pos{2}; $len{2})
@@ -414,7 +436,7 @@ is not synchronous at the ms/process level
 								continue
 							: ($token="mbr")  //start
 								continue
-							: (Match regex:C1019("end_(.+)"; $token; 1; $pos; $len))  //end_form|obj has event information
+							: (Match regex:C1019("end_(.+)"; $token; 1; $pos; $len))  //end_form|obj has no event information
 								$token:=Substring:C12($token; $pos{1}; $len{1})
 								If (Match regex:C1019("(.+)\\.\\s*"; $info; 1; $pos; $len))
 									$Command:=Substring:C12($info; $pos{1}; $len{1})
@@ -588,6 +610,8 @@ Function _tokenToCommandType($token : Text) : Text
 			return "member function"
 		: ($token="form")
 			return "form method"
+		: ($token="task")
+			return "task"
 		Else 
 			TRACE:C157
 	End case 
