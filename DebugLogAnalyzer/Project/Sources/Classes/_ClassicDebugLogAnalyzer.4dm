@@ -24,7 +24,7 @@ Function accumulate($logs : cs:C1710.Log_LinesSelection) : cs:C1710.Log_LinesSel
 			This:C1470.functions:=$logs.query("Cmd_Type in :1"; ["project method"; "member function"])
 		End if 
 		If (This:C1470.commands=Null:C1517)
-			This:C1470.commands:=$logs.query("Cmd_Type in :1"; ["native command"; "plugin call"])
+			This:C1470.commands:=$logs.query("Cmd_Type in :1"; ["native command"; "plugin call"; "task"])
 		End if 
 		If (This:C1470.methods=Null:C1517)
 			This:C1470.methods:=$logs.query("Cmd_Type in :1"; ["form method"; "object method"])
@@ -55,10 +55,15 @@ Function _time($selection : Text; $ctx : Object) : Collection
 	$i:=0
 	For each ($e; $set.orderBy("Execution_Time desc").slice(0; This:C1470.length))
 		$i+=1
+		If ($e.Cmd_Type="plugin call")
+			$Command:=$e.Command
+		Else 
+			$Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
+		End if 
 		$times.push({\
 			ranking: $i; \
 			Execution_Time: $e.Execution_Time; \
-			Command: [$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)\
+			Command: $Command\
 			})
 	End for each 
 	
@@ -128,8 +133,12 @@ Function _count($selection : Text; $ctx : Object) : Collection
 		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $count.hash).first()
 		OB REMOVE:C1226($count; "hash")
+		If ($e.Cmd_Type="plugin call")
+			$count.Command:=$e.Command
+		Else 
+			$count.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
+		End if 
 		$count.ranking:=$i
-		$count.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
 	
 	return $counts
@@ -199,7 +208,11 @@ Function _average($selection : Text; $ctx : Object) : Collection
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $average.hash).first()
 		OB REMOVE:C1226($average; "hash")
 		$average.ranking:=$i
-		$average.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
+		If ($e.Cmd_Type="plugin call")
+			$average.Command:=$e.Command
+		Else 
+			$average.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
+		End if 
 	End for each 
 	
 	return $averages

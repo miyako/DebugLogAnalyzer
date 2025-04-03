@@ -12,6 +12,7 @@ property option : Object
 property Id : Integer
 property properties : Collection
 property path : Text
+property resolver : cs:C1710._PluginCommandResolver
 
 Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogParser)
 	
@@ -25,6 +26,8 @@ Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogPars
 			This:C1470.fileHandle:=$file.open($parser.option)
 			This:C1470.toObject(This:C1470; $parser)
 	End case 
+	
+	This:C1470.resolver:=cs:C1710._PluginCommandResolver.new()
 	
 Function toObject($this : Object; $that : Object) : cs:C1710._ClassicDebugLogParser
 	
@@ -47,29 +50,6 @@ Function reopen() : cs:C1710._ClassicDebugLogParser
 		This:C1470.fileHandle:=This:C1470.file.open(This:C1470.option)
 		This:C1470.fileHandle.readLine()
 	End if 
-	
-Function _tokenToCommandType($token : Text) : Text
-	
-	Case of 
-		: ($token="cmd")
-			return "native command"
-		: ($token="plugin")
-			return "plugin call"
-		: ($token="end_meth")
-			return "project method"
-		: ($token="end_form")
-			return "form method"
-		: ($token="end_obj")
-			return "object method"
-		: ($token="meth")
-			return "project method"
-		: ($token="mbr")
-			return "member function"
-		: ($token="form")
-			return "form method"
-		Else 
-			TRACE:C157
-	End case 
 	
 Function start() : Object
 	
@@ -107,7 +87,11 @@ Function start() : Object
 			This:C1470.Log_Date:=$date
 			This:C1470.Log_Time:=$time
 			This:C1470.Log_MS:=0
-			This:C1470.Log_Version:=2
+			If (This:C1470._isTsv())
+				This:C1470.Log_Version:=3
+			Else 
+				This:C1470.Log_Version:=2
+			End if 
 			This:C1470.isValid:=True:C214
 			This:C1470._getEOL()
 			
@@ -151,27 +135,40 @@ Function start() : Object
 	
 	return This:C1470.option
 	
-Function continue($ctx : Object)
+Function continue($ctx : Object) : Boolean
 	
 	If (This:C1470.isValid)
 		Case of 
+			: (This:C1470.Log_Version=3)
+				This:C1470._v3($ctx)
+				return True:C214
 			: (This:C1470.Log_Version=2)
 				This:C1470._v2($ctx)
+				return True:C214
 			: (This:C1470.Log_Version=1)
 				This:C1470._v1($ctx)
+				return True:C214
 		End case 
 	End if 
+	
+	return False:C215
+	
+	//MARK:-
 	
 Function _v($flag : Integer; $ctx : Object)
 	
 	ARRAY LONGINT:C221($pos; 0)
 	ARRAY LONGINT:C221($len; 0)
 	
-	var $MS_Stamp_cmd; $MS_Stamp_form; $MS_Stamp_meth : Collection
+	var $MS_Stamp_cmd; $MS_Stamp_task; $MS_Stamp_form; $MS_Stamp_meth : Collection
 	
 	$MS_Stamp_cmd:=[]
 	$MS_Stamp_form:=[]
 	$MS_Stamp_meth:=[]
+	$MS_Stamp_task:=[]
+	
+	var $stacks : Object
+	$stacks:={}
 	
 	var $o : Object
 	var $ms : Text
@@ -199,6 +196,48 @@ Function _v($flag : Integer; $ctx : Object)
 		
 		If ($values.length>0)
 			Case of 
+				: ($flag=3)
+					If ($values.length#11)
+						break
+					End if 
+					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
+					$iso8601:=$values[1]
+					$PID:=Num:C11($values[2])
+					$UPID:=Num:C11($values[3])
+					$Stack_Level:=Num:C11($values[4])
+					$Command:=$values[6]
+					If ($values[8]="0")
+						$Cmd_Event:=""
+					Else 
+						$Cmd_Event:=$values[8]
+					End if 
+					$operation_type:=Num:C11($values[5])
+					Case of 
+						: ($operation_type=1)
+							$token:="cmd"
+						: ($operation_type=2)
+							If ($Cmd_Event="")
+								$token:="meth"
+							Else 
+								$token:="end_form"
+							End if 
+						: ($operation_type=3) || ($operation_type=4)
+							continue
+						: ($operation_type=5) || ($operation_type=6) || ($operation_type=7)
+							$token:="plugin"
+						: ($operation_type=8)
+							$token:="task"
+						: ($operation_type=9)
+							$token:="mbr"
+					End case 
+					//$stack_opening_sequence_number:=Num($values[9])
+					
+					//If ()
+					
+					//$stacks[$MS_Stamp]:={Command: $Command}
+					
+					//End if 
+					
 				: ($flag=2)
 					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
 				: ($flag=1)
@@ -338,6 +377,56 @@ is not synchronous at the ms/process level
 			End case 
 		End if 
 		
+		If ($flag=3)
+			Case of 
+				: ($token="cmd")
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Execution_Time:=Num:C11($values[10])
+					$Command:=Parse formula:C1576(":C"+$Command)
+					$operation_parameters:=$values[7]
+					If ($operation_parameters#"")
+						$Command+="("+$operation_parameters+")"
+					End if 
+				: ($token="meth") || ($token="end_form") || ($token="mbr")  //no diff between obj/form
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Execution_Time:=Num:C11($values[10])
+					$operation_parameters:=$values[7]
+					If ($operation_parameters#"")
+						$Command+="("+$operation_parameters+")"
+					End if 
+				: ($token="plugin")
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Cmd_Event:=$Command
+					$Command:=This:C1470.resolver.getInfo($Cmd_Event)
+				: ($token="task")
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					If ($Command="")  //no task information, ignore
+						continue
+					End if 
+				Else 
+					TRACE:C157
+			End case 
+			If ($Command="")
+				TRACE:C157
+			End if 
+			This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+			$milliseconds:=Milliseconds:C459
+			If (Abs:C99($milliseconds-$time)>$interval)
+				$time:=$milliseconds
+				If ($isGUI)
+					CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+				End if 
+			End if 
+			continue
+		End if 
 		If ($flag=2)
 			If ($values.length>1)
 				$line:=$values[1]
@@ -354,12 +443,38 @@ is not synchronous at the ms/process level
 				End if 
 				If ($values.length>2)
 					$line:=$values[2]
+					Case of 
+						: (Match regex:C1019("\\((\\d+)\\)\\s+(\\S+) stop\\. ([0-9<]+)\\s+ms$"; $line; 1; $pos; $len))
+							$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
+							$token:=Substring:C12($line; $pos{2}; $len{2})
+							If ($MS_Stamp_task.length#0)
+								$Command:=$MS_Stamp_task.pop().Command
+							Else 
+								$Command:=""
+							End if 
+							$Cmd_Event:=""
+							$ms:=Substring:C12($line; $pos{3}; $len{3})
+							$Execution_Time:=0
+							If ($ms#"<")
+								$Execution_Time:=Num:C11($ms)
+							End if 
+							This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+							$milliseconds:=Milliseconds:C459
+							If (Abs:C99($milliseconds-$time)>$interval)
+								$time:=$milliseconds
+								If ($isGUI)
+									CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+								End if 
+							End if 
+							continue
+					End case 
 					If (Match regex:C1019("\\((\\d+)\\)\\s+([^:]+): (.+)"; $line; 1; $pos; $len))  //2 spaces in case of start token
 						$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
 						$token:=Substring:C12($line; $pos{2}; $len{2})
 						$info:=Substring:C12($line; $pos{3}; $len{3})
 						Case of 
 							: ($token="task start")
+								$MS_Stamp_task.push({Command: $info})
 								continue
 						End case 
 						$Execution_Time:=0
@@ -389,7 +504,7 @@ is not synchronous at the ms/process level
 								continue
 							: ($token="mbr")  //start
 								continue
-							: (Match regex:C1019("end_(.+)"; $token; 1; $pos; $len))  //end_form|obj has event information
+							: (Match regex:C1019("end_(.+)"; $token; 1; $pos; $len))  //end_form|obj has no event information
 								$token:=Substring:C12($token; $pos{1}; $len{1})
 								If (Match regex:C1019("(.+)\\.\\s*"; $info; 1; $pos; $len))
 									$Command:=Substring:C12($info; $pos{1}; $len{1})
@@ -460,9 +575,13 @@ Function _v2($ctx : Object)
 	
 	This:C1470._v(2; $ctx)
 	
+Function _v3($ctx : Object)
+	
+	This:C1470._v(3; $ctx)
+	
 Function _add($DL_ID : Integer; $MS_Stamp : Integer; $PID : Integer; $UPID : Integer; $Stack_Level : Integer; $Execution_Time : Integer; $Command : Text; $Cmd_Type : Text; $Cmd_Event : Text)
 	
-	If ($Execution_Time=0)
+	If ($Execution_Time=0) || ($Cmd_Type="")
 		return 
 	End if 
 	var $Log_Lines : cs:C1710.Log_LinesEntity
@@ -494,7 +613,7 @@ Function _getEOL() : cs:C1710._ClassicDebugLogParser
 		: ($bytes[0]=Line feed:K15:40)
 			This:C1470.breakModeRead:="lf"
 		Else 
-			This:C1470.breakModeRead:="cr"
+			This:C1470.breakModeRead:="cr"  //v11 windows is crcr which is an invalid argument
 	End case 
 	
 	This:C1470.fileHandle:=Null:C1517
@@ -516,3 +635,54 @@ Function _getEOL() : cs:C1710._ClassicDebugLogParser
 	This:C1470.fileHandle.offset:=$offset
 	
 	return This:C1470
+	
+Function _isTsv() : Boolean
+	
+	$offset:=This:C1470.fileHandle.offset
+	$line2:=This:C1470.fileHandle.readLine()
+	
+	
+	$headers:=["sequence_number"; "time"; "processID"; "unique_processID"; "stack_level"; "operation_type"; "operation"; "operation_parameters"; "form_event"; "stack_opening_sequence_number"; "stack_level_execution_time"]
+	
+	$values:=Split string:C1554($line2; "\t")
+	
+	If ($values.length=$headers.length)
+		For ($i; 0; $values.length-1)
+			If (0#Compare strings:C1756($values[$i]; $headers[$i]; sk char codes:K86:5))
+				This:C1470.fileHandle.offset:=$offset  //rewind
+				return False:C215
+			End if 
+		End for 
+		return True:C214
+	End if 
+	
+	This:C1470.fileHandle.offset:=$offset  //rewind
+	return False:C215
+	
+Function _tokenToCommandType($token : Text) : Text
+	
+	Case of 
+		: ($token="cmd")
+			return "native command"
+		: ($token="plugin")
+			return "plugin call"
+		: ($token="end_meth")
+			return "project method"
+		: ($token="end_form")
+			return "form method"
+		: ($token="end_obj")
+			return "object method"
+		: ($token="meth")
+			return "project method"
+		: ($token="mbr")
+			return "member function"
+		: ($token="form")
+			return "form method"
+		: ($token="task")
+			return "task"
+		: ($token="message")
+			return ""
+		Else 
+			TRACE:C157
+	End case 
+	
