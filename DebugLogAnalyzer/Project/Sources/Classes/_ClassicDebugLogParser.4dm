@@ -81,16 +81,14 @@ Function start() : Object
 			$time:=Time:C179([$hh; $mm; $ss].join(":"))
 			$date:=Add to date:C393(!00-00-00!; $year; $m; $dd)
 			
+			This:C1470.Log_Date:=$date
+			This:C1470.Log_Time:=$time
+			This:C1470.Log_MS:=0
 			If (This:C1470._isTsv())
 				This:C1470.Log_Version:=3
 			Else 
 				This:C1470.Log_Version:=2
 			End if 
-			
-			This:C1470.Log_Date:=$date
-			This:C1470.Log_Time:=$time
-			This:C1470.Log_MS:=0
-			This:C1470.Log_Version:=2
 			This:C1470.isValid:=True:C214
 			This:C1470._getEOL()
 			
@@ -190,6 +188,13 @@ Function _v($flag : Integer; $ctx : Object)
 		
 		If ($values.length>0)
 			Case of 
+				: ($flag=3)
+					If ($values.length#11)
+						break
+					End if 
+					
+					
+					
 				: ($flag=2)
 					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
 				: ($flag=1)
@@ -516,7 +521,7 @@ Function _isTsv() : Boolean
 	
 	$offset:=This:C1470.fileHandle.offset
 	$line2:=This:C1470.fileHandle.readLine()
-	This:C1470.fileHandle.offset:=$offset  //rewind
+	
 	
 	$headers:=["sequence_number"; "time"; "processID"; "unique_processID"; "stack_level"; "operation_type"; "operation"; "operation_parameters"; "form_event"; "stack_opening_sequence_number"; "stack_level_execution_time"]
 	
@@ -525,12 +530,14 @@ Function _isTsv() : Boolean
 	If ($values.length=$headers.length)
 		For ($i; 0; $values.length-1)
 			If (0#Compare strings:C1756($values[$i]; $headers[$i]; sk char codes:K86:5))
+				This:C1470.fileHandle.offset:=$offset  //rewind
 				return False:C215
 			End if 
 		End for 
 		return True:C214
 	End if 
 	
+	This:C1470.fileHandle.offset:=$offset  //rewind
 	return False:C215
 	
 Function _tokenToCommandType($token : Text) : Text
