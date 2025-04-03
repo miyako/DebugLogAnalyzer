@@ -26,6 +26,28 @@ Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogPars
 			This:C1470.toObject(This:C1470; $parser)
 	End case 
 	
+	
+Function _isTsv() : Boolean
+	
+	$offset:=This:C1470.fileHandle.offset
+	$line2:=This:C1470.fileHandle.readLine()
+	This:C1470.fileHandle.offset:=$offset  //rewind
+	
+	$headers:=["sequence_number"; "time"; "processID"; "unique_processID"; "stack_level"; "operation_type"; "operation"; "operation_parameters"; "form_event"; "stack_opening_sequence_number"; "stack_level_execution_time"]
+	
+	$values:=Split string:C1554($line2; "\t")
+	
+	If ($values.length=$headers.length)
+		For ($i; 0; $values.length-1)
+			If (0#Compare strings:C1756($values[$i]; $headers[$i]; sk char codes:K86:5))
+				return False:C215
+			End if 
+		End for 
+		return True:C214
+	End if 
+	
+	return False:C215
+	
 Function toObject($this : Object; $that : Object) : cs:C1710._ClassicDebugLogParser
 	
 	$properties:=["option"; "Id"; "option"; "charset"; "Log_Version"; "Log_MS"; "Log_Time"; "Log_Date"; "breakModeRead"; "isValid"; "line1"]
@@ -103,6 +125,12 @@ Function start() : Object
 			End if 
 			$time:=Time:C179([$hh; $mm; $ss].join(":"))
 			$date:=Add to date:C393(!00-00-00!; $year; $m; $dd)
+			
+			If (This:C1470._isTsv())
+				This:C1470.Log_Version:=3
+			Else 
+				This:C1470.Log_Version:=2
+			End if 
 			
 			This:C1470.Log_Date:=$date
 			This:C1470.Log_Time:=$time
