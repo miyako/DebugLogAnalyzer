@@ -156,11 +156,12 @@ Function _v($flag : Integer; $ctx : Object)
 	ARRAY LONGINT:C221($pos; 0)
 	ARRAY LONGINT:C221($len; 0)
 	
-	var $MS_Stamp_cmd; $MS_Stamp_form; $MS_Stamp_meth : Collection
+	var $MS_Stamp_cmd; $MS_Stamp_task; $MS_Stamp_form; $MS_Stamp_meth : Collection
 	
 	$MS_Stamp_cmd:=[]
 	$MS_Stamp_form:=[]
 	$MS_Stamp_meth:=[]
+	$MS_Stamp_task:=[]
 	
 	var $o : Object
 	var $ms : Text
@@ -379,11 +380,16 @@ is not synchronous at the ms/process level
 				End if 
 				If ($values.length>2)
 					$line:=$values[2]
-					
 					Case of 
 						: (Match regex:C1019("\\((\\d+)\\)\\s+(\\S+) stop\\. ([0-9<]+)\\s+ms$"; $line; 1; $pos; $len))
 							$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
 							$token:=Substring:C12($line; $pos{2}; $len{2})
+							If ($MS_Stamp_task.length#0)
+								$Command:=$MS_Stamp_task.pop().Command
+							Else 
+								$Command:=""
+							End if 
+							$Cmd_Event:=""
 							$ms:=Substring:C12($line; $pos{3}; $len{3})
 							$Execution_Time:=0
 							If ($ms#"<")
@@ -407,6 +413,7 @@ is not synchronous at the ms/process level
 						$info:=Substring:C12($line; $pos{3}; $len{3})
 						Case of 
 							: ($token="task start")
+								$MS_Stamp_task.push({Command: $info})
 								continue
 						End case 
 						$Execution_Time:=0
