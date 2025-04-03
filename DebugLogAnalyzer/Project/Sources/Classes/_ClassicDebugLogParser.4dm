@@ -193,7 +193,36 @@ Function _v($flag : Integer; $ctx : Object)
 						break
 					End if 
 					
+					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
+					$iso8601:=$values[1]
+					$PID:=Num:C11($values[2])
+					$UPID:=Num:C11($values[3])
+					$Stack_Level:=Num:C11($values[4])
+					$Command:=$values[6]
+					$Cmd_Event:=$values[8]
 					
+					$operation_type:=Num:C11($values[5])
+					
+					Case of 
+						: ($operation_type=1) || ($operation_type=8)
+							$token:="cmd"
+						: ($operation_type=2)
+							$token:="meth"
+						: ($operation_type=3) || ($operation_type=4)
+							$token:="message"  //do not record
+						: ($operation_type=5) || ($operation_type=6) || ($operation_type=7)
+							$token:="plugin"
+						: ($operation_type=9)
+							$token:="mbr"
+					End case 
+					
+					$operation_parameters:=$values[7]
+					If ($operation_parameters#"")
+						$Command+=$operation_parameters
+					End if 
+					
+					$stack_opening_sequence_number:=Num:C11($values[9])
+					$stack_level_execution_time:=Num:C11($values[10])
 					
 				: ($flag=2)
 					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
