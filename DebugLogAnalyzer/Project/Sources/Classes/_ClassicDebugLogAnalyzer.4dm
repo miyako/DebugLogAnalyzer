@@ -21,13 +21,13 @@ Function accumulate($logs : cs:C1710.Log_LinesSelection) : cs:C1710.Log_LinesSel
 	If (This:C1470.logs=Null:C1517)
 		This:C1470.logs:=$logs
 		If (This:C1470.functions=Null:C1517)
-			This:C1470.functions:=$logs.query("Cmd_Type in :1 and Execution_Time != :2"; ["project method"; "member function"]; 0)
+			This:C1470.functions:=$logs.query("Cmd_Type in :1"; ["project method"; "member function"])
 		End if 
 		If (This:C1470.commands=Null:C1517)
-			This:C1470.commands:=$logs.query("Cmd_Type in :1 and Execution_Time != :2"; ["native command"; "plugin call"]; 0)
+			This:C1470.commands:=$logs.query("Cmd_Type in :1"; ["native command"; "plugin call"])
 		End if 
 		If (This:C1470.methods=Null:C1517)
-			This:C1470.methods:=$logs.query("Cmd_Type in :1 and Execution_Time != :2"; ["form method"; "object method"]; 0)
+			This:C1470.methods:=$logs.query("Cmd_Type in :1"; ["form method"; "object method"])
 		End if 
 	End if 
 	
@@ -51,8 +51,12 @@ Function _time($selection : Text; $ctx : Object) : Collection
 	
 	var $e : cs:C1710.Log_LinesEntity
 	
+	var $i : Integer
+	$i:=0
 	For each ($e; $set.orderBy("Execution_Time desc").slice(0; This:C1470.length))
+		$i+=1
 		$times.push({\
+			ranking: $i; \
 			Execution_Time: $e.Execution_Time; \
 			Command: [$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)\
 			})
@@ -118,9 +122,13 @@ Function _count($selection : Text; $ctx : Object) : Collection
 	End if 
 	
 	var $e : cs:C1710.Log_LinesEntity
+	var $i : Integer
+	$i:=0
 	For each ($count; $counts)
+		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $count.hash).first()
 		OB REMOVE:C1226($count; "Hash")
+		$count.ranking:=$i
 		$count.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
 	
@@ -184,9 +192,13 @@ Function _average($selection : Text; $ctx : Object) : Collection
 	End if 
 	
 	var $e : cs:C1710.Log_LinesEntity
+	var $i : Integer
+	$i:=0
 	For each ($average; $averages)
+		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $average.hash).first()
 		OB REMOVE:C1226($average; "Hash")
+		$average.ranking:=$i
 		$average.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
 	

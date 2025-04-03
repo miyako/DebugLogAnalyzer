@@ -24,10 +24,20 @@ Class constructor
 	
 	This:C1470.logFile:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 	
-	This:C1470.length:=10
 	This:C1470.refreshInterval:=1000
 	
 	//MARK:-Form Object States
+	
+Function get length() : Integer
+	
+	Case of 
+		: (Form:C1466.top20)
+			return 20
+		: (Form:C1466.top50)
+			return 50
+		Else 
+			return 10
+	End case 
 	
 Function toggleListSelection() : cs:C1710.DebugLogAnalyzerForm
 	
@@ -138,6 +148,10 @@ Function onLoad()
 	OBJECT SET FORMAT:C236(*; "Column15"; "#,###,###,##0.0")
 	OBJECT SET FORMAT:C236(*; "Column17"; "#,###,###,##0.0")
 	OBJECT SET FORMAT:C236(*; "Column23"; "#,###,###,##0.0")
+	
+	Form:C1466.top10:=True:C214
+	Form:C1466.top20:=False:C215
+	Form:C1466.top50:=False:C215
 	
 Function onUnload()
 	

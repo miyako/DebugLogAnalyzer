@@ -70,6 +70,18 @@
           <source>Commands</source>
           <target>Commands</target>
         </trans-unit>
+        <trans-unit resname="Top 10">
+          <source>Top 10</source>
+          <target>Top 10</target>
+        </trans-unit>
+        <trans-unit resname="Top 20">
+          <source>Top 20</source>
+          <target>Top 20</target>
+        </trans-unit>
+        <trans-unit resname="Top 50">
+          <source>Top 50</source>
+          <target>Top 50</target>
+        </trans-unit>
       </group>
     </body>
   </file>
