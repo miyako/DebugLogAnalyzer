@@ -205,7 +205,7 @@ Function _v($flag : Integer; $ctx : Object)
 					$operation_type:=Num:C11($values[5])
 					
 					Case of 
-						: ($operation_type=1) || ($operation_type=8)
+						: ($operation_type=1)
 							$token:="cmd"
 						: ($operation_type=2)
 							$token:="meth"
@@ -213,6 +213,8 @@ Function _v($flag : Integer; $ctx : Object)
 							$token:="message"  //do not record
 						: ($operation_type=5) || ($operation_type=6) || ($operation_type=7)
 							$token:="plugin"
+						: ($operation_type=8)
+							$token:="task"
 						: ($operation_type=9)
 							$token:="mbr"
 					End case 
@@ -520,7 +522,7 @@ Function _v3($ctx : Object)
 	
 Function _add($DL_ID : Integer; $MS_Stamp : Integer; $PID : Integer; $UPID : Integer; $Stack_Level : Integer; $Execution_Time : Integer; $Command : Text; $Cmd_Type : Text; $Cmd_Event : Text)
 	
-	If ($Execution_Time=0)
+	If ($Execution_Time=0) || ($Cmd_Type="")
 		return 
 	End if 
 	var $Log_Lines : cs:C1710.Log_LinesEntity
@@ -552,7 +554,7 @@ Function _getEOL() : cs:C1710._ClassicDebugLogParser
 		: ($bytes[0]=Line feed:K15:40)
 			This:C1470.breakModeRead:="lf"
 		Else 
-			This:C1470.breakModeRead:="cr"
+			This:C1470.breakModeRead:="cr"  //v11 windows is crcr which is an invalid argument
 	End case 
 	
 	This:C1470.fileHandle:=Null:C1517
@@ -619,7 +621,9 @@ Function _tokenToCommandType($token : Text) : Text
 			return "form method"
 		: ($token="task")
 			return "task"
+		: ($token="message")
+			return ""
 		Else 
-			TRACE:C157
+			return ""  //message
 	End case 
 	
