@@ -462,6 +462,9 @@ Function _v2($ctx : Object)
 	
 Function _add($DL_ID : Integer; $MS_Stamp : Integer; $PID : Integer; $UPID : Integer; $Stack_Level : Integer; $Execution_Time : Integer; $Command : Text; $Cmd_Type : Text; $Cmd_Event : Text)
 	
+	If ($Execution_Time=0)
+		return 
+	End if 
 	var $Log_Lines : cs:C1710.Log_LinesEntity
 	$Log_Lines:=ds:C1482.Log_Lines.new()
 	$Log_Lines.DL_ID:=$DL_ID

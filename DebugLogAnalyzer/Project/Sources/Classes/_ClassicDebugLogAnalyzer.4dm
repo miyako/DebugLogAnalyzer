@@ -21,13 +21,13 @@ Function accumulate($logs : cs:C1710.Log_LinesSelection) : cs:C1710.Log_LinesSel
 	If (This:C1470.logs=Null:C1517)
 		This:C1470.logs:=$logs
 		If (This:C1470.functions=Null:C1517)
-			This:C1470.functions:=$logs.query("Cmd_Type in :1 and Execution_Time != :2"; ["project method"; "member function"]; 0)
+			This:C1470.functions:=$logs.query("Cmd_Type in :1"; ["project method"; "member function"])
 		End if 
 		If (This:C1470.commands=Null:C1517)
-			This:C1470.commands:=$logs.query("Cmd_Type in :1 and Execution_Time != :2"; ["native command"; "plugin call"]; 0)
+			This:C1470.commands:=$logs.query("Cmd_Type in :1"; ["native command"; "plugin call"])
 		End if 
 		If (This:C1470.methods=Null:C1517)
-			This:C1470.methods:=$logs.query("Cmd_Type in :1 and Execution_Time != :2"; ["form method"; "object method"]; 0)
+			This:C1470.methods:=$logs.query("Cmd_Type in :1"; ["form method"; "object method"])
 		End if 
 	End if 
 	
