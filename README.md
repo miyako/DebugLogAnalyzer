@@ -28,6 +28,7 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * use preëmptive process in compiled mode
 * support new classic "human readable" debug log file (see below)
 * support dark mode
+* sub-millisecond operations are ignored
 * export JSON
 * export XLSX
 
@@ -100,4 +101,9 @@ there are evidently 2 versions of this format:
 ```
 11	2025-04-01T18:27:13.281 p=6 puid=10	(0)  form: IAS_CustomAlert during OnLoad
 64	2025-04-01T18:27:13.286 p=6 puid=10	(0)  end_form: IAS_CustomAlert during OnLoad. 2 ms
-``` 
+```
+
+## Export JSON or XLSX
+
+<img src="https://github.com/user-attachments/assets/c9d613a6-8ba0-45d0-a157-c2aaa8346da0" width=800 height=auto />
+
