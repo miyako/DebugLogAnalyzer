@@ -26,7 +26,7 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * `CALL FORM` instead of `POST OUTSIDE CALL`
 * `CALL WORKER` instead of `New process`
 * use preëmptive process in compiled mode
-* support new classic "human readable" standard[^1] debug log file (see below)
+* support new classic "human readable" standard debug log files [^1]
 * support dark mode
 * sub-millisecond operations are ignored
 * export JSON
