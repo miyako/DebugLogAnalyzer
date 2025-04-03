@@ -252,6 +252,51 @@
 					"dataSourceTypeHint": "boolean",
 					"dataSource": "Form:C1466.useMultipleCores",
 					"focusable": false
+				},
+				"top10": {
+					"type": "radio",
+					"text": ":xliff:Top 10",
+					"top": 33,
+					"left": 720,
+					"width": 68,
+					"height": 17,
+					"events": [
+						"onClick"
+					],
+					"focusable": false,
+					"radioGroup": "limit",
+					"dataSourceTypeHint": "boolean",
+					"dataSource": "Form:C1466.top10"
+				},
+				"top20": {
+					"type": "radio",
+					"text": ":xliff:Top 20",
+					"top": 33,
+					"left": 800,
+					"width": 68,
+					"height": 17,
+					"events": [
+						"onClick"
+					],
+					"focusable": false,
+					"radioGroup": "limit",
+					"dataSourceTypeHint": "boolean",
+					"dataSource": "Form:C1466.top20"
+				},
+				"top50": {
+					"type": "radio",
+					"text": ":xliff:Top 50",
+					"top": 33,
+					"left": 880,
+					"width": 68,
+					"height": 17,
+					"events": [
+						"onClick"
+					],
+					"focusable": false,
+					"radioGroup": "limit",
+					"dataSourceTypeHint": "boolean",
+					"dataSource": "Form:C1466.top50"
 				}
 			}
 		},
@@ -818,7 +863,7 @@
 		}
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 459,
+	"geometryStamp": 472,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",
