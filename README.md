@@ -104,8 +104,22 @@ there are evidently 2 versions of this format:
 64	2025-04-01T18:27:13.286 p=6 puid=10	(0)  end_form: IAS_CustomAlert during OnLoad. 2 ms
 ```
 
+## Plugins 
+
+
+information about plugins are reported in 4 categories in a tabular debug log [^2]  
+the uniform format is `{number};{code}'. 
+
+the command number is their position in manifest.json. the number is the position in `PLUGIN LIST`. this is specific to the execution context. because plugins are not loaded in alphabetical order, it is not possible to trace a plugin number its list of command names. for that reason, information about commands and events are ignored in the TSV format.  
+ 
+* plugin message (4): ignored
+* plugin event (5): record the `eAE_*` event code as defined in PublicTypes.h
+* plugin command (6): ignored
+* plugin callback (7): record the `EX_*` entry point as defined in EntryPoints.h
+
 ## Export JSON or XLSX
 
 <img src="https://github.com/user-attachments/assets/c9d613a6-8ba0-45d0-a157-c2aaa8346da0" width=800 height=auto />
 
 [^1]: [Development Environment > Log files > 4DDebugLog.txt (standard)](https://developer.4d.com/docs/Debugging/debugLogFiles#4ddebuglogtxt-standard])
+[^2]: [Development Environment > Log files > 4DDebugLog.txt (tabular) ↩](https://developer.4d.com/docs/Debugging/debugLogFiles#4ddebuglogtxt-tabular)
