@@ -12,6 +12,7 @@ property option : Object
 property Id : Integer
 property properties : Collection
 property path : Text
+property resolver : cs:C1710._PluginCommandResolver
 
 Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogParser)
 	
@@ -25,6 +26,8 @@ Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogPars
 			This:C1470.fileHandle:=$file.open($parser.option)
 			This:C1470.toObject(This:C1470; $parser)
 	End case 
+	
+	This:C1470.resolver:=cs:C1710._PluginCommandResolver.new()
 	
 Function toObject($this : Object; $that : Object) : cs:C1710._ClassicDebugLogParser
 	
@@ -396,7 +399,11 @@ is not synchronous at the ms/process level
 						$Command+="("+$operation_parameters+")"
 					End if 
 				: ($token="plugin")
-					continue  //need plugin command resolver
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Cmd_Event:=$Command
+					$Command:=This:C1470.resolver.getInfo($Cmd_Event)
 				: ($token="task")
 					If ($values[9]="")  //opening stack level 
 						continue
