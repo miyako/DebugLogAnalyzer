@@ -51,8 +51,12 @@ Function _time($selection : Text; $ctx : Object) : Collection
 	
 	var $e : cs:C1710.Log_LinesEntity
 	
+	var $i : Integer
+	$i:=0
 	For each ($e; $set.orderBy("Execution_Time desc").slice(0; This:C1470.length))
+		$i+=1
 		$times.push({\
+			ranking: $i; \
 			Execution_Time: $e.Execution_Time; \
 			Command: [$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)\
 			})
@@ -118,9 +122,13 @@ Function _count($selection : Text; $ctx : Object) : Collection
 	End if 
 	
 	var $e : cs:C1710.Log_LinesEntity
+	var $i : Integer
+	$i:=0
 	For each ($count; $counts)
+		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $count.hash).first()
 		OB REMOVE:C1226($count; "Hash")
+		$count.ranking:=$i
 		$count.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
 	
@@ -184,9 +192,13 @@ Function _average($selection : Text; $ctx : Object) : Collection
 	End if 
 	
 	var $e : cs:C1710.Log_LinesEntity
+	var $i : Integer
+	$i:=0
 	For each ($average; $averages)
+		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $average.hash).first()
 		OB REMOVE:C1226($average; "Hash")
+		$average.ranking:=$i
 		$average.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
 	

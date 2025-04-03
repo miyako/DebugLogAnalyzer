@@ -329,6 +329,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header33"
+							},
+							"name": "Column33",
+							"footer": {
+								"name": "Footer33"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.Command",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header9"
 							},
@@ -339,7 +356,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -390,6 +407,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header34"
+							},
+							"name": "Column34",
+							"footer": {
+								"name": "Footer34"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header8"
 							},
@@ -400,7 +434,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -451,6 +485,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header32"
+							},
+							"name": "Column32",
+							"footer": {
+								"name": "Footer32"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header10"
 							},
@@ -461,7 +512,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -516,6 +567,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header30"
+							},
+							"name": "Column30",
+							"footer": {
+								"name": "Footer30"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header13"
 							},
@@ -526,7 +594,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -577,6 +645,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header29"
+							},
+							"name": "Column29",
+							"footer": {
+								"name": "Footer29"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header16"
 							},
@@ -587,7 +672,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -638,6 +723,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header31"
+							},
+							"name": "Column31",
+							"footer": {
+								"name": "Footer31"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header18"
 							},
@@ -648,7 +750,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -703,6 +805,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header27"
+							},
+							"name": "Column27",
+							"footer": {
+								"name": "Footer27"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header20"
 							},
@@ -713,7 +832,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -764,6 +883,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header26"
+							},
+							"name": "Column26",
+							"footer": {
+								"name": "Footer26"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header22"
 							},
@@ -774,7 +910,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
@@ -825,6 +961,23 @@
 					"columns": [
 						{
 							"header": {
+								"text": "",
+								"name": "Header28"
+							},
+							"name": "Column28",
+							"footer": {
+								"name": "Footer28"
+							},
+							"resizable": false,
+							"enterable": false,
+							"truncateMode": "none",
+							"width": 30,
+							"dataSource": "This:C1470.ranking",
+							"dataSourceTypeHint": "number",
+							"textAlign": "right"
+						},
+						{
+							"header": {
 								"text": ":xliff:Command",
 								"name": "Header24"
 							},
@@ -835,7 +988,7 @@
 							"resizable": false,
 							"enterable": false,
 							"truncateMode": "none",
-							"width": 240,
+							"width": 230,
 							"dataSource": "This:C1470.Command",
 							"dataSourceTypeHint": "text",
 							"textAlign": "left"
