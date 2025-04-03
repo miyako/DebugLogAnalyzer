@@ -28,6 +28,8 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * use preëmptive process in compiled mode
 * support new classic "human readable" debug log file (see below)
 * support dark mode
+* export JSON
+* export XLSX
 
 ## page 1
 
