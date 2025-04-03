@@ -6,7 +6,7 @@
   ],
   "license": "MIT",
   "repository": "https://github.com/miyako/DebugLogAnalyzer",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "tool": {
     "platform": "macos",
     "branch": "20%20Rx",
