@@ -138,6 +138,7 @@ Function continue($ctx : Object) : Boolean
 		Case of 
 			: (This:C1470.Log_Version=3)
 				This:C1470._v3($ctx)
+				return True:C214
 			: (This:C1470.Log_Version=2)
 				This:C1470._v2($ctx)
 				return True:C214
@@ -162,6 +163,9 @@ Function _v($flag : Integer; $ctx : Object)
 	$MS_Stamp_form:=[]
 	$MS_Stamp_meth:=[]
 	$MS_Stamp_task:=[]
+	
+	var $stacks : Object
+	$stacks:={}
 	
 	var $o : Object
 	var $ms : Text
@@ -193,24 +197,29 @@ Function _v($flag : Integer; $ctx : Object)
 					If ($values.length#11)
 						break
 					End if 
-					
 					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
 					$iso8601:=$values[1]
 					$PID:=Num:C11($values[2])
 					$UPID:=Num:C11($values[3])
 					$Stack_Level:=Num:C11($values[4])
 					$Command:=$values[6]
-					$Cmd_Event:=$values[8]
-					
+					If ($values[8]="0")
+						$Cmd_Event:=""
+					Else 
+						$Cmd_Event:=$values[8]
+					End if 
 					$operation_type:=Num:C11($values[5])
-					
 					Case of 
 						: ($operation_type=1)
 							$token:="cmd"
 						: ($operation_type=2)
-							$token:="meth"
+							If ($Cmd_Event="")
+								$token:="meth"
+							Else 
+								$token:="end_form"
+							End if 
 						: ($operation_type=3) || ($operation_type=4)
-							$token:="message"  //do not record
+							continue
 						: ($operation_type=5) || ($operation_type=6) || ($operation_type=7)
 							$token:="plugin"
 						: ($operation_type=8)
@@ -218,14 +227,13 @@ Function _v($flag : Integer; $ctx : Object)
 						: ($operation_type=9)
 							$token:="mbr"
 					End case 
+					//$stack_opening_sequence_number:=Num($values[9])
 					
-					$operation_parameters:=$values[7]
-					If ($operation_parameters#"")
-						$Command+=$operation_parameters
-					End if 
+					//If ()
 					
-					$stack_opening_sequence_number:=Num:C11($values[9])
-					$stack_level_execution_time:=Num:C11($values[10])
+					//$stacks[$MS_Stamp]:={Command: $Command}
+					
+					//End if 
 					
 				: ($flag=2)
 					$MS_Stamp:=Num:C11($values[0])  //actually the sequential operation number
@@ -366,6 +374,52 @@ is not synchronous at the ms/process level
 			End case 
 		End if 
 		
+		If ($flag=3)
+			Case of 
+				: ($token="cmd")
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Execution_Time:=Num:C11($values[10])
+					$Command:=Parse formula:C1576(":C"+$Command)
+					$operation_parameters:=$values[7]
+					If ($operation_parameters#"")
+						$Command+="("+$operation_parameters+")"
+					End if 
+				: ($token="meth") || ($token="end_form") || ($token="mbr")  //no diff between obj/form
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					$Execution_Time:=Num:C11($values[10])
+					$operation_parameters:=$values[7]
+					If ($operation_parameters#"")
+						$Command+="("+$operation_parameters+")"
+					End if 
+				: ($token="plugin")
+					continue  //need plugin command resolver
+				: ($token="task")
+					If ($values[9]="")  //opening stack level 
+						continue
+					End if 
+					If ($Command="")  //no task information, ignore
+						continue
+					End if 
+				Else 
+					TRACE:C157
+			End case 
+			If ($Command="")
+				TRACE:C157
+			End if 
+			This:C1470._add(This:C1470.Id; $MS_Stamp; $PID; $UPID; $Stack_Level; $Execution_Time; $Command; $token; $Cmd_Event)
+			$milliseconds:=Milliseconds:C459
+			If (Abs:C99($milliseconds-$time)>$interval)
+				$time:=$milliseconds
+				If ($isGUI)
+					CALL FORM:C1391($ctx.window; $ctx.onRefresh)
+				End if 
+			End if 
+			continue
+		End if 
 		If ($flag=2)
 			If ($values.length>1)
 				$line:=$values[1]
@@ -407,8 +461,6 @@ is not synchronous at the ms/process level
 							End if 
 							continue
 					End case 
-					
-					
 					If (Match regex:C1019("\\((\\d+)\\)\\s+([^:]+): (.+)"; $line; 1; $pos; $len))  //2 spaces in case of start token
 						$Stack_Level:=Num:C11(Substring:C12($line; $pos{1}; $len{1}))
 						$token:=Substring:C12($line; $pos{2}; $len{2})
@@ -624,6 +676,6 @@ Function _tokenToCommandType($token : Text) : Text
 		: ($token="message")
 			return ""
 		Else 
-			return ""  //message
+			TRACE:C157
 	End case 
 	
