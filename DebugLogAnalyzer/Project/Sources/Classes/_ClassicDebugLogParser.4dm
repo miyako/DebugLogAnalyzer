@@ -26,28 +26,6 @@ Class constructor($file : 4D:C1709.File; $parser : cs:C1710._ClassicDebugLogPars
 			This:C1470.toObject(This:C1470; $parser)
 	End case 
 	
-	
-Function _isTsv() : Boolean
-	
-	$offset:=This:C1470.fileHandle.offset
-	$line2:=This:C1470.fileHandle.readLine()
-	This:C1470.fileHandle.offset:=$offset  //rewind
-	
-	$headers:=["sequence_number"; "time"; "processID"; "unique_processID"; "stack_level"; "operation_type"; "operation"; "operation_parameters"; "form_event"; "stack_opening_sequence_number"; "stack_level_execution_time"]
-	
-	$values:=Split string:C1554($line2; "\t")
-	
-	If ($values.length=$headers.length)
-		For ($i; 0; $values.length-1)
-			If (0#Compare strings:C1756($values[$i]; $headers[$i]; sk char codes:K86:5))
-				return False:C215
-			End if 
-		End for 
-		return True:C214
-	End if 
-	
-	return False:C215
-	
 Function toObject($this : Object; $that : Object) : cs:C1710._ClassicDebugLogParser
 	
 	$properties:=["option"; "Id"; "option"; "charset"; "Log_Version"; "Log_MS"; "Log_Time"; "Log_Date"; "breakModeRead"; "isValid"; "line1"]
@@ -69,29 +47,6 @@ Function reopen() : cs:C1710._ClassicDebugLogParser
 		This:C1470.fileHandle:=This:C1470.file.open(This:C1470.option)
 		This:C1470.fileHandle.readLine()
 	End if 
-	
-Function _tokenToCommandType($token : Text) : Text
-	
-	Case of 
-		: ($token="cmd")
-			return "native command"
-		: ($token="plugin")
-			return "plugin call"
-		: ($token="end_meth")
-			return "project method"
-		: ($token="end_form")
-			return "form method"
-		: ($token="end_obj")
-			return "object method"
-		: ($token="meth")
-			return "project method"
-		: ($token="mbr")
-			return "member function"
-		: ($token="form")
-			return "form method"
-		Else 
-			TRACE:C157
-	End case 
 	
 Function start() : Object
 	
@@ -183,6 +138,8 @@ Function continue($ctx : Object) : Boolean
 	
 	If (This:C1470.isValid)
 		Case of 
+			: (This:C1470.Log_Version=3)
+				This:C1470._v3($ctx)
 			: (This:C1470.Log_Version=2)
 				This:C1470._v2($ctx)
 				return True:C214
@@ -193,6 +150,8 @@ Function continue($ctx : Object) : Boolean
 	End if 
 	
 	return False:C215
+	
+	//MARK:-
 	
 Function _v($flag : Integer; $ctx : Object)
 	
@@ -492,6 +451,10 @@ Function _v2($ctx : Object)
 	
 	This:C1470._v(2; $ctx)
 	
+Function _v3($ctx : Object)
+	
+	This:C1470._v(3; $ctx)
+	
 Function _add($DL_ID : Integer; $MS_Stamp : Integer; $PID : Integer; $UPID : Integer; $Stack_Level : Integer; $Execution_Time : Integer; $Command : Text; $Cmd_Type : Text; $Cmd_Event : Text)
 	
 	If ($Execution_Time=0)
@@ -548,3 +511,48 @@ Function _getEOL() : cs:C1710._ClassicDebugLogParser
 	This:C1470.fileHandle.offset:=$offset
 	
 	return This:C1470
+	
+Function _isTsv() : Boolean
+	
+	$offset:=This:C1470.fileHandle.offset
+	$line2:=This:C1470.fileHandle.readLine()
+	This:C1470.fileHandle.offset:=$offset  //rewind
+	
+	$headers:=["sequence_number"; "time"; "processID"; "unique_processID"; "stack_level"; "operation_type"; "operation"; "operation_parameters"; "form_event"; "stack_opening_sequence_number"; "stack_level_execution_time"]
+	
+	$values:=Split string:C1554($line2; "\t")
+	
+	If ($values.length=$headers.length)
+		For ($i; 0; $values.length-1)
+			If (0#Compare strings:C1756($values[$i]; $headers[$i]; sk char codes:K86:5))
+				return False:C215
+			End if 
+		End for 
+		return True:C214
+	End if 
+	
+	return False:C215
+	
+Function _tokenToCommandType($token : Text) : Text
+	
+	Case of 
+		: ($token="cmd")
+			return "native command"
+		: ($token="plugin")
+			return "plugin call"
+		: ($token="end_meth")
+			return "project method"
+		: ($token="end_form")
+			return "form method"
+		: ($token="end_obj")
+			return "object method"
+		: ($token="meth")
+			return "project method"
+		: ($token="mbr")
+			return "member function"
+		: ($token="form")
+			return "form method"
+		Else 
+			TRACE:C157
+	End case 
+	
