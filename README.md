@@ -26,7 +26,7 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * `CALL FORM` instead of `POST OUTSIDE CALL`
 * `CALL WORKER` instead of `New process`
 * use preëmptive process in compiled mode
-* support new classic "human readable" debug log file (see below)
+* support new classic "human readable" standard[^1] debug log file (see below)
 * support dark mode
 * sub-millisecond operations are ignored
 * export JSON
@@ -107,3 +107,4 @@ there are evidently 2 versions of this format:
 
 <img src="https://github.com/user-attachments/assets/c9d613a6-8ba0-45d0-a157-c2aaa8346da0" width=800 height=auto />
 
+[^1]: [Development Environment > Log files > 4DDebugLog.txt (standard)](https://developer.4d.com/docs/Debugging/debugLogFiles#4ddebuglogtxt-standard])
