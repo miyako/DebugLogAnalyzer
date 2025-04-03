@@ -22,4 +22,8 @@ Case of
 		
 		Form:C1466.onUnload()
 		
+	: ($event.code=On Page Change:K2:54)
+		
+		Form:C1466.onPageChange()
+		
 End case 

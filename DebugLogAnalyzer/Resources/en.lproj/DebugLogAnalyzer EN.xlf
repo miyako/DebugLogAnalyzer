@@ -82,6 +82,10 @@
           <source>Top 50</source>
           <target>Top 50</target>
         </trans-unit>
+        <trans-unit resname="Export JSON…">
+          <source>Export JSON…</source>
+          <target>Export JSON…</target>
+        </trans-unit>
       </group>
     </body>
   </file>

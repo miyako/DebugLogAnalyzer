@@ -15,6 +15,8 @@ property functionCounts : Object
 property functionAverages : Object
 property functionTimes : Object
 property refreshInterval : Integer
+property JSON : Object
+property exportFileJson : 4D:C1709.File
 
 Class extends _Form
 
@@ -23,6 +25,8 @@ Class constructor
 	Super:C1705()
 	
 	This:C1470.logFile:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+	
+	This:C1470.exportFileJson:=Folder:C1567(fk desktop folder:K87:19).file("DebugLogAnalyzer.json")
 	
 	This:C1470.refreshInterval:=1000
 	
@@ -38,6 +42,25 @@ Function get length() : Integer
 		Else 
 			return 10
 	End case 
+	
+Function toggleExport() : cs:C1710.DebugLogAnalyzerForm
+	
+	If (Not:C34(This:C1470.isRunning)) && (Form:C1466.JSON.analytics#Null:C1517)
+		OBJECT SET ENABLED:C1123(*; "exportJ"; True:C214)
+	Else 
+		OBJECT SET ENABLED:C1123(*; "exportJ"; False:C215)
+	End if 
+	
+	$page:=FORM Get current page:C276
+	
+	Case of 
+		: ($page=1)
+			OBJECT SET VISIBLE:C603(*; "exportJ"; False:C215)
+		Else 
+			OBJECT SET VISIBLE:C603(*; "exportJ"; True:C214)
+	End case 
+	
+	return This:C1470
 	
 Function toggleListSelection() : cs:C1710.DebugLogAnalyzerForm
 	
@@ -56,6 +79,10 @@ Function toggleSelectDataFile() : cs:C1710.DebugLogAnalyzerForm
 	return This:C1470
 	
 	//MARK:-Form Events
+	
+Function onPageChange()
+	
+	This:C1470.toggleExport()
 	
 Function onDragOver() : Integer
 	
@@ -153,6 +180,8 @@ Function onLoad()
 	Form:C1466.top20:=False:C215
 	Form:C1466.top50:=False:C215
 	
+	Form:C1466.toggleExport()
+	
 Function onUnload()
 	
 	Form:C1466._killAll()
@@ -167,6 +196,18 @@ Function start() : cs:C1710.DebugLogAnalyzerForm
 	This:C1470.toggleSelectDataFile()
 	
 	return This:C1470
+	
+Function toJson() : 4D:C1709.File
+	
+	var $fileName : cs:C1710.FileName
+	$fileName:=cs:C1710.FileName.new(This:C1470.exportFileJson)
+	
+	var $file : 4D:C1709.File
+	$file:=$fileName.file
+	
+	$file.setText(JSON Stringify:C1217(Form:C1466.JSON.analytics; *))
+	
+	return $file
 	
 Function updateDuration() : cs:C1710.DebugLogAnalyzerForm
 	
@@ -222,6 +263,8 @@ Function open($paths : Collection)
 	This:C1470.functionAverages:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 	This:C1470.functionTimes:={col: []; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 	
+	Form:C1466.JSON:={}
+	
 	$countCores:=This:C1470.countCores>This:C1470.logFile.col.length ? This:C1470.countCores : This:C1470.logFile.col.length
 	
 	If (This:C1470.useMultipleCores)
@@ -243,7 +286,7 @@ Function open($paths : Collection)
 	$ctx.updateInterval:=This:C1470.updateInterval
 	$ctx.length:=This:C1470.length
 	
-	This:C1470.start().updateDuration().toggleListSelection()
+	This:C1470.start().updateDuration().toggleListSelection().toggleExport()
 	
 	var $workerNames : Collection
 	var $workerName : Text
@@ -432,6 +475,8 @@ Function _onFinish($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 		
 		$analytics:=$debugLogInfo.analytics
 		
+		Form:C1466.JSON.analytics:=$analytics
+		
 		Form:C1466.commandCounts:={col: $analytics.counts.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.commandAverages:={col: $analytics.averages.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.commandTimes:={col: $analytics.times.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
@@ -443,6 +488,8 @@ Function _onFinish($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 		Form:C1466.functionCounts:={col: $analytics.counts.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.functionAverages:={col: $analytics.averages.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
 		Form:C1466.functionTimes:={col: $analytics.times.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		
+		$this.toggleExport()
 		
 		For each ($workerName; $ctx.workerNames)
 			KILL WORKER:C1390($workerName)

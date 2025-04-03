@@ -13,7 +13,8 @@
 	"bottomMargin": 20,
 	"events": [
 		"onLoad",
-		"onUnload"
+		"onUnload",
+		"onPageChange"
 	],
 	"windowTitle": "",
 	"destination": "detailScreen",
@@ -37,6 +38,19 @@
 					],
 					"action": "gotoPage",
 					"bottom": 570
+				},
+				"exportJ": {
+					"type": "button",
+					"text": ":xliff:Export JSON…",
+					"top": 30,
+					"left": 900,
+					"width": 136,
+					"height": 22,
+					"events": [
+						"onClick"
+					],
+					"focusable": false,
+					"method": "ObjectMethods/exportJ.4dm"
 				}
 			}
 		},
@@ -1016,7 +1030,7 @@
 		}
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 472,
+	"geometryStamp": 507,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",
