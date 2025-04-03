@@ -72,7 +72,7 @@
 					"selectedItemsSource": "Form:C1466.logFile.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "files",
-					"staticColumnCount": 1,
+					"staticColumnCount": 2,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -133,7 +133,7 @@
 					"selectedItemsSource": "Form:C1466.logLines.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "records",
-					"staticColumnCount": 1,
+					"staticColumnCount": 5,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -319,7 +319,7 @@
 					"selectedItemsSource": "Form:C1466.commandCounts.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "commands",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -353,7 +353,7 @@
 							"footer": {
 								"name": "Footer9"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -397,7 +397,7 @@
 					"selectedItemsSource": "Form:C1466.commandAverages.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "commands",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -431,7 +431,7 @@
 							"footer": {
 								"name": "Footer8"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -475,7 +475,7 @@
 					"selectedItemsSource": "Form:C1466.commandTimes.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "commands",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -509,7 +509,7 @@
 							"footer": {
 								"name": "Footer10"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -557,7 +557,7 @@
 					"selectedItemsSource": "Form:C1466.methodCounts.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "methods",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -591,7 +591,7 @@
 							"footer": {
 								"name": "Footer13"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -635,7 +635,7 @@
 					"selectedItemsSource": "Form:C1466.methodAverages.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "methods",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -669,7 +669,7 @@
 							"footer": {
 								"name": "Footer16"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -713,7 +713,7 @@
 					"selectedItemsSource": "Form:C1466.methodTimes.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "methods",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -747,7 +747,7 @@
 							"footer": {
 								"name": "Footer18"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -795,7 +795,7 @@
 					"selectedItemsSource": "Form:C1466.functionCounts.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "functions",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -829,7 +829,7 @@
 							"footer": {
 								"name": "Footer20"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -873,7 +873,7 @@
 					"selectedItemsSource": "Form:C1466.functionAverages.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "functions",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -907,7 +907,7 @@
 							"footer": {
 								"name": "Footer22"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
@@ -951,7 +951,7 @@
 					"selectedItemsSource": "Form:C1466.functionTimes.sel",
 					"horizontalLineStroke": "transparent",
 					"class": "functions",
-					"staticColumnCount": 1,
+					"staticColumnCount": 3,
 					"resizingMode": "legacy",
 					"sizingX": "grow",
 					"sizingY": "grow",
@@ -985,7 +985,7 @@
 							"footer": {
 								"name": "Footer24"
 							},
-							"resizable": false,
+							"resizable": true,
 							"enterable": false,
 							"truncateMode": "none",
 							"width": 230,
