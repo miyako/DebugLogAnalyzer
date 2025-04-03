@@ -127,7 +127,7 @@ Function _count($selection : Text; $ctx : Object) : Collection
 	For each ($count; $counts)
 		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $count.hash).first()
-		OB REMOVE:C1226($count; "Hash")
+		OB REMOVE:C1226($count; "hash")
 		$count.ranking:=$i
 		$count.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
@@ -197,7 +197,7 @@ Function _average($selection : Text; $ctx : Object) : Collection
 	For each ($average; $averages)
 		$i+=1
 		$e:=ds:C1482.Log_Lines.query("Hash == :1"; $average.hash).first()
-		OB REMOVE:C1226($average; "Hash")
+		OB REMOVE:C1226($average; "hash")
 		$average.ranking:=$i
 		$average.Command:=[$e.Command; $e.Cmd_Event].join(" "; ck ignore null or empty:K85:5)
 	End for each 
