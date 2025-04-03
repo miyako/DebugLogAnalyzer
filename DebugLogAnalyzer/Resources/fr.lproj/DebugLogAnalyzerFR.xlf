@@ -86,6 +86,10 @@
           <source>Export JSON…</source>
           <target>Export JSON…</target>
         </trans-unit>
+        <trans-unit resname="Export XLSX…">
+          <source>Export XLSX…</source>
+          <target>Export XLSX…</target>
+        </trans-unit>
       </group>
     </body>
   </file>

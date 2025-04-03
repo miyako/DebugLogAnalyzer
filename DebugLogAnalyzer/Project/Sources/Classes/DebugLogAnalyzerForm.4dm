@@ -47,8 +47,10 @@ Function toggleExport() : cs:C1710.DebugLogAnalyzerForm
 	
 	If (Not:C34(This:C1470.isRunning)) && (Form:C1466.JSON.analytics#Null:C1517)
 		OBJECT SET ENABLED:C1123(*; "exportJ"; True:C214)
+		OBJECT SET ENABLED:C1123(*; "exportX"; True:C214)
 	Else 
 		OBJECT SET ENABLED:C1123(*; "exportJ"; False:C215)
+		OBJECT SET ENABLED:C1123(*; "exportX"; False:C215)
 	End if 
 	
 	$page:=FORM Get current page:C276
@@ -56,8 +58,10 @@ Function toggleExport() : cs:C1710.DebugLogAnalyzerForm
 	Case of 
 		: ($page=1)
 			OBJECT SET VISIBLE:C603(*; "exportJ"; False:C215)
+			OBJECT SET VISIBLE:C603(*; "exportX"; False:C215)
 		Else 
 			OBJECT SET VISIBLE:C603(*; "exportJ"; True:C214)
+			OBJECT SET VISIBLE:C603(*; "exportX"; True:C214)
 	End case 
 	
 	return This:C1470
@@ -206,6 +210,53 @@ Function toJson() : 4D:C1709.File
 	$file:=$fileName.file
 	
 	$file.setText(JSON Stringify:C1217(Form:C1466.JSON.analytics; *))
+	
+	return $file
+	
+Function _toXlsx($XLSX : cs:C1710.XLSX; $sheetIndex : Integer; $type : Text; $domain : Text)
+	
+	var $value : Object
+	var $i : Integer
+	var $data : Collection
+	
+	$data:=This:C1470.JSON.analytics[$type][$domain]
+	
+	If ($data.length#0)
+		$i:=1
+		$values:={}
+		For each ($value; $data)
+			$i+=1
+			$idx:=String:C10($i)
+			$values["A"+$idx]:=$value.ranking
+			$values["B"+$idx]:=$value.Command
+			$values["C"+$idx]:=$value.Execution_Time
+		End for each 
+		$status:=$XLSX.setValues($values; $sheetIndex)
+	End if 
+	
+Function toXlsx() : 4D:C1709.File
+	
+	var $XLSX : cs:C1710.XLSX
+	$XLSX:=cs:C1710.XLSX.new()
+	
+	$file:=File:C1566("/RESOURCES/XLSX/DebugLogAnalyzer.xlsx")
+	$status:=$XLSX.read($file)
+	
+	This:C1470._toXlsx($XLSX; 1; "times"; "commands")
+	This:C1470._toXlsx($XLSX; 2; "times"; "methods")
+	This:C1470._toXlsx($XLSX; 3; "times"; "functions")
+	
+	This:C1470._toXlsx($XLSX; 4; "averages"; "commands")
+	This:C1470._toXlsx($XLSX; 5; "averages"; "methods")
+	This:C1470._toXlsx($XLSX; 6; "averages"; "functions")
+	
+	This:C1470._toXlsx($XLSX; 7; "counts"; "commands")
+	This:C1470._toXlsx($XLSX; 8; "counts"; "methods")
+	This:C1470._toXlsx($XLSX; 9; "counts"; "functions")
+	
+	$file:=Folder:C1567(fk desktop folder:K87:19).file($file.fullName)
+	$file:=cs:C1710.FileName.new($file).file
+	$status:=$XLSX.write($file)
 	
 	return $file
 	

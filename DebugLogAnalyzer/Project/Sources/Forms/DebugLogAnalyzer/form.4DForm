@@ -43,7 +43,7 @@
 					"type": "button",
 					"text": ":xliff:Export JSON…",
 					"top": 30,
-					"left": 900,
+					"left": 760,
 					"width": 136,
 					"height": 22,
 					"events": [
@@ -51,6 +51,19 @@
 					],
 					"focusable": false,
 					"method": "ObjectMethods/exportJ.4dm"
+				},
+				"exportX": {
+					"type": "button",
+					"text": ":xliff:Export XLSX…",
+					"top": 30,
+					"left": 900,
+					"width": 136,
+					"height": 22,
+					"events": [
+						"onClick"
+					],
+					"focusable": false,
+					"method": "ObjectMethods/exportX.4dm"
 				}
 			}
 		},
@@ -1030,7 +1043,7 @@
 		}
 	],
 	"menuBar": "Barre #1",
-	"geometryStamp": 507,
+	"geometryStamp": 523,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",
