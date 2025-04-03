@@ -27,6 +27,7 @@ based on original work by [Josh Fletcher](https://kb.4d.com/assetid=75926) (2009
 * `CALL WORKER` instead of `New process`
 * use preëmptive process in compiled mode
 * support new classic "human readable" standard debug log files [^1]
+* support tsv debug log file
 * support dark mode
 * sub-millisecond operations are ignored
 * export JSON
