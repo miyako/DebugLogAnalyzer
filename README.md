@@ -107,7 +107,7 @@ there are evidently 2 versions of this format:
 ## Plugins 
 
 
-information about plugin are reported in 3 categories in a tabular debug log [^2]  
+information about plugin are reported in 4 categories in a tabular debug log [^2]  
 the uniform format is `{number};{code}'. 
 
 the command number is their position in manifest.json. the number is the position in `PLUGIN LIST`. this is specific to the execution context. because plugins are not loaded in alphabetical order, it is not possible to trace a plugin number its list of command names. for that reason, information about commands and events are ignored in the TSV format.  
