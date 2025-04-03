@@ -397,13 +397,15 @@ Function _open($ctx : Object)
 				CALL WORKER:C1389($workerName; $ctx.workerFunction; $debugLogInfo; $ctx)
 			End for each 
 		Else 
-			$first.continue($ctx)
-			$ctx.onReadFile($debugLogInfo; $file; $ctx)
+			If ($first.continue($ctx))
+				$ctx.onReadFile($debugLogInfo; $file; $ctx)
+			End if 
 			CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
 			For each ($file; $ctx.files.slice(1))
 				$parser:=cs:C1710._ClassicDebugLogParser.new($file; $first)
-				$parser.continue($ctx)
-				$ctx.onReadFile($debugLogInfo; $file; $ctx)
+				If ($parser.continue($ctx))
+					$ctx.onReadFile($debugLogInfo; $file; $ctx)
+				End if 
 				CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $file; $ctx)
 			End for each 
 		End if 
@@ -436,8 +438,9 @@ Function _processFile($debugLogInfo : Object; $ctx : Object)
 	Else 
 		$parser:=cs:C1710._ClassicDebugLogParser.new()
 		$parser.toObject($parser; $that).reopen()
-		$parser.continue($ctx)
-		$ctx.onReadFile($debugLogInfo; $parser.file; $ctx)
+		If ($parser.continue($ctx))
+			$ctx.onReadFile($debugLogInfo; $parser.file; $ctx)
+		End if 
 		CALL FORM:C1391($ctx.window; $ctx.onFinish; $debugLogInfo; $parser.file; $ctx)
 	End if 
 	
@@ -520,25 +523,29 @@ Function _onFinish($debugLogInfo : Object; $file : 4D:C1709.File; $ctx : Object)
 		
 		$this.stop().toggleListSelection()
 		
-		$col:=ds:C1482.Log_Lines.query("DL_ID == :1 order by Execution_Time desc"; $this.debugLogInfo.Id)
-		
-		$this.logLines:={col: $col; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		
-		$analytics:=$debugLogInfo.analytics
-		
-		Form:C1466.JSON.analytics:=$analytics
-		
-		Form:C1466.commandCounts:={col: $analytics.counts.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		Form:C1466.commandAverages:={col: $analytics.averages.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		Form:C1466.commandTimes:={col: $analytics.times.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		
-		Form:C1466.methodCounts:={col: $analytics.counts.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		Form:C1466.methodAverages:={col: $analytics.averages.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		Form:C1466.methodTimes:={col: $analytics.times.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		
-		Form:C1466.functionCounts:={col: $analytics.counts.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		Form:C1466.functionAverages:={col: $analytics.averages.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
-		Form:C1466.functionTimes:={col: $analytics.times.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		If ($this.debugLogInfo.Id=Null:C1517)
+			//invalid file
+		Else 
+			$col:=ds:C1482.Log_Lines.query("DL_ID == :1 order by Execution_Time desc"; $this.debugLogInfo.Id)
+			
+			$this.logLines:={col: $col; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			
+			$analytics:=$debugLogInfo.analytics
+			
+			Form:C1466.JSON.analytics:=$analytics
+			
+			Form:C1466.commandCounts:={col: $analytics.counts.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			Form:C1466.commandAverages:={col: $analytics.averages.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			Form:C1466.commandTimes:={col: $analytics.times.commands; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			
+			Form:C1466.methodCounts:={col: $analytics.counts.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			Form:C1466.methodAverages:={col: $analytics.averages.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			Form:C1466.methodTimes:={col: $analytics.times.methods; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			
+			Form:C1466.functionCounts:={col: $analytics.counts.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			Form:C1466.functionAverages:={col: $analytics.averages.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+			Form:C1466.functionTimes:={col: $analytics.times.functions; sel: Null:C1517; pos: Null:C1517; item: Null:C1517}
+		End if 
 		
 		$this.toggleExport()
 		

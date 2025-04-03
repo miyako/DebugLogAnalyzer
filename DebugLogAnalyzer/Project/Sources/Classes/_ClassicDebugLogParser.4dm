@@ -151,16 +151,20 @@ Function start() : Object
 	
 	return This:C1470.option
 	
-Function continue($ctx : Object)
+Function continue($ctx : Object) : Boolean
 	
 	If (This:C1470.isValid)
 		Case of 
 			: (This:C1470.Log_Version=2)
 				This:C1470._v2($ctx)
+				return True:C214
 			: (This:C1470.Log_Version=1)
 				This:C1470._v1($ctx)
+				return True:C214
 		End case 
 	End if 
+	
+	return False:C215
 	
 Function _v($flag : Integer; $ctx : Object)
 	
