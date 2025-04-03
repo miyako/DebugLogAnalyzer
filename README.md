@@ -122,3 +122,4 @@ the command number is their position in manifest.json. the number is the positio
 <img src="https://github.com/user-attachments/assets/c9d613a6-8ba0-45d0-a157-c2aaa8346da0" width=800 height=auto />
 
 [^1]: [Development Environment > Log files > 4DDebugLog.txt (standard)](https://developer.4d.com/docs/Debugging/debugLogFiles#4ddebuglogtxt-standard])
+[^2]: [Development Environment > Log files > 4DDebugLog.txt (tabular) ↩](https://developer.4d.com/docs/Debugging/debugLogFiles#4ddebuglogtxt-tabular)
