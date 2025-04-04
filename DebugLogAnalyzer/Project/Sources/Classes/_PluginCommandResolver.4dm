@@ -1,6 +1,7 @@
 property manifests : Collection
 property callbacks : Object
-property events : Object
+property pluginAreaEvents : Object
+property formEvents : Object
 
 Class constructor($files : Collection)
 	
@@ -16,7 +17,8 @@ Class constructor($files : Collection)
 	End if 
 	
 	This:C1470.callbacks:=JSON Parse:C1218(File:C1566("/RESOURCES/PluginCallback.json").getText())
-	This:C1470.events:=JSON Parse:C1218(File:C1566("/RESOURCES/PluginEvent.json").getText())
+	This:C1470.pluginAreaEvents:=JSON Parse:C1218(File:C1566("/RESOURCES/PluginEvent.json").getText())
+	This:C1470.formEvents:=JSON Parse:C1218(File:C1566("/RESOURCES/FormEvent.json").getText())
 	
 Function _get($operation : Text; $source : Text) : Text
 	
@@ -38,7 +40,18 @@ Function _get($operation : Text; $source : Text) : Text
 	
 Function getEventInfo($operation : Text) : Text
 	
-	return This:C1470._get($operation; "events")
+	return This:C1470._get($operation; "pluginAreaEvents")
+	
+Function getFormEventInfo($operation : Text) : Text
+	
+	var $kvp : Object
+	$kvp:=This:C1470.formEvents
+	
+	If (OB Is defined:C1231($kvp; $operation))
+		return $kvp[$operation]
+	End if 
+	
+	return 
 	
 Function getCallbackInfo($operation : Text) : Text
 	

@@ -400,6 +400,7 @@ is not synchronous at the ms/process level
 					If ($values[9]="")  //opening stack level 
 						continue
 					End if 
+					$Cmd_Event:=This:C1470.resolver.getFormEventInfo($Cmd_Event)
 					$Execution_Time:=Num:C11($values[10])
 					$operation_parameters:=$values[7]
 					If ($operation_parameters#"")
