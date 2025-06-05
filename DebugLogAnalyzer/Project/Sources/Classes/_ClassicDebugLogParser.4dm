@@ -185,6 +185,7 @@ Function _v($flag : Integer; $ctx : Object)
 	Repeat 
 		
 		Repeat 
+			$line:=This:C1470.fileHandle.readLine()
 		Until (This:C1470.fileHandle.eof) || ($line#"")
 		
 		If (This:C1470.fileHandle.eof)
