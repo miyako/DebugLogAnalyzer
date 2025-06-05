@@ -184,7 +184,8 @@ Function _v($flag : Integer; $ctx : Object)
 	
 	Repeat 
 		
-		$line:=This:C1470.fileHandle.readLine()
+		Repeat 
+		Until (This:C1470.fileHandle.eof) || ($line#"")
 		
 		If (This:C1470.fileHandle.eof)
 			break
@@ -661,8 +662,20 @@ Function _getEOL() : cs:C1710._ClassicDebugLogParser
 Function _isTsv() : Boolean
 	
 	$offset:=This:C1470.fileHandle.offset
-	$line2:=This:C1470.fileHandle.readLine()
 	
+	var $line2 : Text
+	var $isCRLF : Boolean
+	
+	Repeat 
+		$line2:=This:C1470.fileHandle.readLine()
+		If ($line2="")
+			$isCRLF:=True:C214
+		End if 
+	Until (This:C1470.fileHandle.eof) || ($line2#"")
+	
+	If ($isCRLF)
+		This:C1470.fileHandle.offset+=2
+	End if 
 	
 	$headers:=["sequence_number"; "time"; "processID"; "unique_processID"; "stack_level"; "operation_type"; "operation"; "operation_parameters"; "form_event"; "stack_opening_sequence_number"; "stack_level_execution_time"]
 	
